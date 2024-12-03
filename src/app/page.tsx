@@ -1,4 +1,4 @@
-import SignUp from "./features/Auth/SignUp";
+import SignUp from "./components/SignUp";
 
 export default function Home() {
   return (
