@@ -1,5 +1,8 @@
 'use client'
 import React, { useState } from 'react';
+import Image from 'next/image';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Lock, Mail } from 'lucide-react';
 
 const SignUp = () => {
   const [username, setUsername] = useState({
@@ -41,6 +44,13 @@ const SignUp = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+                <Image
+            src='/Images/communityChatLogo.jpg'
+            alt='Community Chat Logo'
+            height={100}
+            width={100}
+            className='justify-center ml-auto mr-auto'
+          />
         <h1 className="text-2xl font-extrabold text-center text-indigo-500">SIGN UP</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
