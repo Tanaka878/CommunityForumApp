@@ -18,3 +18,24 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* globals.css */
+
+@layer utilities {
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in {
+    animation: slide-in-left 1s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
