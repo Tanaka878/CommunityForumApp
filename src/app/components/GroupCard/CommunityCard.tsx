@@ -9,8 +9,8 @@ const GroupCommunityCard: React.FC = () => {
   const onJoin = () => alert('You have joined the group!'); // Example action for the button
 
   return (
-    <div className="flex flex-col items-center justify-between w-64 h-80 bg-white border border-gray-300 rounded-lg shadow-md p-4">
-      <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+<div className="flex flex-col items-center justify-between w-full max-w-xs bg-white border border-gray-300 rounded-lg shadow-md p-4">
+<div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
         <img
           src={image}
           alt={`${groupName} image`}
