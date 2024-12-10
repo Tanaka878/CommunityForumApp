@@ -54,10 +54,7 @@ const Picture = () => {
         />
       </div>
 
-      {/* Instructions */}
-      <p className="text-gray-600 text-center">
-        
-      </p>
+    
     </div>
   );
 };
