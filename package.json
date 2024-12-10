@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@react-oauth/google": "^0.12.1",
+    "@shadcn/ui": "^0.0.4",
     "autoprefixer": "^10.4.20",
+    "components": "^0.1.0",
+    "heroicons": "^2.2.0",
     "lucide-react": "^0.468.0",
     "next": "15.0.3",
     "next-auth": "^4.24.10",
@@ -20,7 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.3.14",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
