@@ -5,12 +5,12 @@ import React from 'react';
 const GroupCommunityCard: React.FC = () => {
   // Hardcoded data
   const image = 'https://via.placeholder.com/150'; // Replace with your image URL
-  const groupName = 'Tech Enthusiasts'; // Example group name
+  const groupName = 'Tech '; // Example group name
   const onJoin = () => alert('You have joined the group!'); // Example action for the button
 
   return (
-<div className="flex flex-col items-center justify-between w-full max-w-xs bg-white border border-gray-300 rounded-lg shadow-md p-4">
-<div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+<div className="flex flex-col items-center justify-between w-full max-w-xs bg-white border border-gray-300 rounded-lg shadow-md p-4 ">
+<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
         <img
           src={image}
           alt={`${groupName} image`}
