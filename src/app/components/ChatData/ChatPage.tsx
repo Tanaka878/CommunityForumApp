@@ -125,10 +125,10 @@ const ChatPage = () => {
   const handleSend = () => {
     if (newMessage || newImage) {
       const reader = new FileReader();
-
-      reader.onload = () => {
-        setMessages([
-          ...messages,
+  
+      const processMessage = (imageData?: string) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
           {
             id: Date.now(),
             sender: 'Me',
@@ -139,22 +139,23 @@ const ChatPage = () => {
             }),
             likes: 0,
             replies: [],
-            imageUrl: newImage ? reader.result as string : undefined,
+            imageUrl: imageData,
           },
         ]);
         setNewMessage('');
         setNewImage(null);
         setImagePreview(null);
       };
-
+  
       if (newImage) {
+        reader.onload = () => processMessage(reader.result as string);
         reader.readAsDataURL(newImage);
       } else {
-        reader.onload();
+        processMessage(); // No image, just process the text message
       }
     }
   };
-
+  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setNewImage(file);
