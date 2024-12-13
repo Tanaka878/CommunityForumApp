@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FaImage } from 'react-icons/fa';
+import { FaImage, FaArrowLeft, FaPaperPlane } from 'react-icons/fa';
 
 type Message = {
   id: number;
@@ -171,7 +171,10 @@ const ChatPage = () => {
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Chat Header */}
-      <div className="p-4 bg-white border-b border-gray-200">
+      <div className="p-4 bg-white border-b border-gray-200 flex items-center">
+        <button className="mr-4 text-gray-600 hover:text-gray-800">
+          <FaArrowLeft size={20} />
+        </button>
         <div className="text-lg font-semibold text-gray-800">{chat.name}</div>
       </div>
 
@@ -268,9 +271,9 @@ const ChatPage = () => {
           </label>
           <button
             onClick={handleSend}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
           >
-            Send
+            <FaPaperPlane size={20} />
           </button>
         </div>
         {imagePreview && (
