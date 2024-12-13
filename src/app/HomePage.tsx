@@ -36,7 +36,7 @@ const HomePage = () => {
 
       <div>
 
-        <h2 className='font-extrabold mx-auto'>My Communities </h2>
+        <h2 className='font-extrabold flex justify-center items-center'>My Communities </h2>
         <div className='grid mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
           <GroupCommunityCard/>
           <GroupCommunityCard/>
