@@ -26,14 +26,29 @@ const HomePage = () => {
 
       <SearchBar onSearch={handleSearch}/>
 
-      <div className='grid mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-        <GroupCommunityCard/>
-        <GroupCommunityCard/>
-        <GroupCommunityCard/>
-        <GroupCommunityCard/>
-        <GroupCommunityCard/>
+      <nav>
+        <h2>Explore</h2>
+        <nav className='flex'>
+
+
+        </nav>
+      </nav>
+
+      <div>
+
+        <h2 className='font-extrabold mx-auto'>My Communities </h2>
+        <div className='grid mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
+          <GroupCommunityCard/>
+          <GroupCommunityCard/>
+          <GroupCommunityCard/>
+          <GroupCommunityCard/>
+          <GroupCommunityCard/>
+
+        </div>
 
       </div>
+
+      
       
     </div>
   )
