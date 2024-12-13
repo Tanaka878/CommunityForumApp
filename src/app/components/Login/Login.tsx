@@ -7,21 +7,18 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-
   useEffect(() => {
     const elements = document.querySelectorAll('.slide-in');
     
     elements.forEach((el, index) => {
-      // Cast `el` to HTMLElement to access `style`
-      const element = el as HTMLElement;
-  
-      // Ensure the element is an HTMLElement before modifying styles
-      element.classList.remove('opacity-0', 'translate-x-full');
-      element.classList.add('opacity-100', 'translate-x-0');
-      element.style.animationDelay = `${index * 0.2}s`; // Stagger the animation for each element
+      // Check if `el` is an HTMLElement before applying styles
+      if (el instanceof HTMLElement) {
+        el.classList.remove('opacity-0', 'translate-x-full');
+        el.classList.add('opacity-100', 'translate-x-0');
+        el.style.animationDelay = `${index * 0.2}s`; // Stagger the animation for each element
+      }
     });
   }, []);
-  
   
 
   const handleSubmit = async (e: React.FormEvent) => {
