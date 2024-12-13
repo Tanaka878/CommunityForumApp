@@ -2,25 +2,35 @@
 
 import React from 'react';
 
-const GroupCommunityCard: React.FC = () => {
-  // Hardcoded data
-  const image = 'https://via.placeholder.com/150'; // Replace with your image URL
-  const groupName = 'Tech '; // Example group name
-  const onJoin = () => alert('You have joined the group!'); // Example action for the button
+type CommunityCardProps = {
+  image?: string;
+  groupName?: string;
+  onJoin?: () => void;
+};
 
+const CommunityCard: React.FC<CommunityCardProps> = ({
+  image = 'https://via.placeholder.com/150',
+  groupName = 'Community Name',
+  onJoin = () => console.log('Join clicked!'),
+}) => {
   return (
-<div className="flex flex-col items-center justify-between w-full max-w-xs bg-white border border-gray-300 rounded-lg shadow-md p-4 ">
-<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
+    <div className="flex flex-col items-center justify-between w-full h-64 bg-white border border-gray-300 rounded-lg shadow-md p-4">
+      {/* Image Section */}
+      <div className="w-full h-28 bg-gray-100 rounded-full overflow-hidden">
         <img
           src={image}
           alt={`${groupName} image`}
           className="w-full h-full object-cover"
         />
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 mt-4">{groupName}</h3>
+      {/* Group Name */}
+      <h3 className="text-sm font-semibold text-gray-800 mt-4 text-center">
+        {groupName}
+      </h3>
+      {/* Join Button */}
       <button
         onClick={onJoin}
-        className="px-4 py-2 mt-auto bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition"
+        className="px-4 py-1 mt-auto bg-blue-500 text-white text-xs font-medium rounded-md hover:bg-blue-600 transition"
       >
         Join
       </button>
@@ -28,4 +38,4 @@ const GroupCommunityCard: React.FC = () => {
   );
 };
 
-export default GroupCommunityCard;
+export default CommunityCard;
