@@ -1,3 +1,5 @@
+import ChatPage from "./components/ChatData/ChatPage";
+import Settings from "./components/Settings/Settings";
 import HomePage from "./HomePage";
 
 
