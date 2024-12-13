@@ -10,14 +10,20 @@ const SignUp= () => {
   const [error, setError] = useState('')
 
   
-  useEffect(() => {
-    const elements = document.querySelectorAll('.slide-in');
-    elements.forEach((el, index) => {
-      el.classList.remove('opacity-0', 'translate-x-full');
-      el.classList.add('opacity-100', 'translate-x-0');
-      el.style.animationDelay = `${index * 0.2}s`; 
-    });
-  }, []);
+   
+    useEffect(() => {
+      const elements = document.querySelectorAll('.slide-in');
+      
+      elements.forEach((el, index) => {
+        // Check if `el` is an HTMLElement before applying styles
+        if (el instanceof HTMLElement) {
+          el.classList.remove('opacity-0', 'translate-x-full');
+          el.classList.add('opacity-100', 'translate-x-0');
+          el.style.animationDelay = `${index * 0.2}s`; // Stagger the animation for each element
+        }
+      });
+    }, []);
+    
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
