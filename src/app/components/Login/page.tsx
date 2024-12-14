@@ -1,56 +1,59 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [token, setToken] = useState(''); // State to store the JWT token
+  const router = useRouter();
 
-  
   useEffect(() => {
     const elements = document.querySelectorAll('.slide-in');
-    
+
     elements.forEach((el, index) => {
-      // Check if `el` is an HTMLElement before applying styles
       if (el instanceof HTMLElement) {
         el.classList.remove('opacity-0', 'translate-x-full');
         el.classList.add('opacity-100', 'translate-x-0');
-        el.style.animationDelay = `${index * 0.2}s`; // Stagger the animation for each element
+        el.style.animationDelay = `${index * 0.2}s`;
       }
     });
   }, []);
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const credentials = { email, password }
-
+    e.preventDefault();
+  
+    const credentials = { email, password };
+  
     try {
-      const response = await fetch('http://localhost:8080/api/v1/authenticate/', {
+      const response = await fetch('http://localhost:8080/api/v1/auth/authenticate/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
-      })
-
+      });
+  
       if (!response.ok) {
-        throw new Error('Login failed')
+        throw new Error('Login failed');
       }
-
-      const data = await response.json()
-
-      // Store the JWT token in localStorage (you can also use sessionStorage)
-      localStorage.setItem('token', data.token)
-
-      // Redirect to a secure page or show success message
-      console.log('Login successful!')
+  
+      const data = await response.json();
+  
+      // Save the JWT token
+      localStorage.setItem('token', data.token);
+      console.log('Token:', data.token);
     } catch (error) {
-      setError('Invalid credentials, please try again.')
+      setError('Invalid credentials, please try again.');
     }
+  };
+  
+
+  function handleSignUp(): void {
+    router.push('/components/SignUp');
   }
 
   return (
@@ -59,7 +62,9 @@ const Login = () => {
 
       <form onSubmit={handleSubmit} className="mt-4">
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">Email</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">
+            Email
+          </label>
           <input
             type="email"
             id="email"
@@ -72,14 +77,16 @@ const Login = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">
+            Password
+          </label>
           <input
             type="password"
             id="password"
             name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-white-300 rounded-md slide-in opacity-0 translate-x-full"
+            className="w-full p-2 border border-gray-300 rounded-md slide-in opacity-0 translate-x-full"
             required
           />
         </div>
@@ -93,14 +100,22 @@ const Login = () => {
           Login
         </button>
         <button
+          onClick={handleSignUp}
           type="button"
           className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 slide-in opacity-0 translate-x-full"
         >
           SignUp
         </button>
       </form>
-    </div>
-  )
-}
 
-export default Login
+      {token && (
+        <div className="mt-4 p-4 border border-gray-300 rounded-md bg-gray-50">
+          <h2 className="text-lg font-semibold">Token:</h2>
+          <p className="text-sm break-all">{token}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Login;
