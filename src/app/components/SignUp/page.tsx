@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
+import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 
 const SignUp= () => {
@@ -8,6 +9,7 @@ const SignUp= () => {
   const [password, setPassword] = useState('')
   const[confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const router = useRouter()
 
   
    
@@ -32,7 +34,7 @@ const SignUp= () => {
 
     if(password === confirmPassword){
         try {
-            const response = await fetch('http://localhost:8080/api/v1/register/', {
+            const response = await fetch('http://localhost:8080/api/v1/auth/register/', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -117,6 +119,7 @@ const SignUp= () => {
           Create Account
         </button>
         <button
+        onClick={()=>router.push('/components/Login')}
           type="button"
           className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 slide-in opacity-0 translate-x-full"
         >
