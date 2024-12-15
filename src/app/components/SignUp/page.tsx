@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react'
 const SignUp= () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName]  = useState('')
   const[confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
@@ -30,7 +31,7 @@ const SignUp= () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const credentials = { email, password }
+    const credentials = { email, password ,firstName}
 
     if(password === confirmPassword){
         try {
@@ -71,6 +72,22 @@ const SignUp= () => {
       <h1 className="text-3xl font-extrabold text-center slide-in opacity-0 translate-x-full">Create Account</h1>
 
       <form onSubmit={handleSubmit} className="mt-4">
+      <div className="mb-4">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">Username</label>
+          <input
+          
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md slide-in opacity-0 translate-x-full"
+            required
+          />
+        </div>
+
+
+
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 slide-in opacity-0 translate-x-full">Email</label>
           <input
