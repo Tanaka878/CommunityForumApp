@@ -55,6 +55,7 @@ const SignUp= () => {
             
       
             // Redirect to a secure page or show success message
+            router.push('/components/Login')
             console.log('Login successful!')
           } catch (error) {
             setError('Invalid credentials, please try again.')
