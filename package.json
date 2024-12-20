@@ -13,6 +13,7 @@
     "@react-oauth/google": "^0.12.1",
     "@shadcn/ui": "^0.0.4",
     "autoprefixer": "^10.4.20",
+    "axios": "^1.7.9",
     "components": "^0.1.0",
     "heroicons": "^2.2.0",
     "lucide-react": "^0.468.0",
