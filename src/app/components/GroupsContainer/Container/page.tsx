@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ProfileImage from "../ProfileImage";
 import PersonalData from "../../ProfileData/PersonalData";
 import GroupCommunityCard from "../../GroupCard/CommunityCard";
@@ -7,26 +7,34 @@ import SearchBar from "../../SearchBar/SearchBar";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+// Define the type for the user object
+interface User {
+  email: string;
+  localDate: string;
+}
+
 const HomePage = () => {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null); // State is either User or null
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found, redirecting to login");
-      router.push("/components/SignUp"); // Redirect if token is missing
+      router.push("/components/SignUp");
       return;
     }
 
     // Validate token with backend
     axios
-      .get("http://localhost:8080/api/v1/demo-controller/fetch", {
+      .get<User>("http://localhost:8080/api/v1/demo-controller/fetch", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        console.log("User data:", response.data);
+        setUser(response.data); // Update state with user data
+        console.log("User data:", response.data.email);
       })
       .catch((error) => {
         console.error("Error:", error.response?.statusText || error.message);
@@ -39,18 +47,21 @@ const HomePage = () => {
   };
 
   const handleLogout = () => {
-    // Clear any authentication data (e.g., token) from storage
     localStorage.removeItem("token");
     console.log("User logged out");
-    // Optionally redirect the user to the login page or home
     window.location.href = "/";
   };
+
+  if (!user) {
+    // Optionally show a loading spinner or placeholder while user data is being fetched
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <nav className="flex bg-slate-600">
         <ProfileImage />
-        <PersonalData />
+        <PersonalData name={user.email} joinDate={user.localDate} />
       </nav>
 
       <nav className="mt-2">

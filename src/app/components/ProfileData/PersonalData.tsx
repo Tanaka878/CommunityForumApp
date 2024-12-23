@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const PersonalData = () => {
+const PersonalData = (props) => {
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-lg">
       {/* Profile Header */}
@@ -12,8 +12,8 @@ const PersonalData = () => {
 
         {/* User Info */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Jane Doe</h2>
-          <p className="text-sm text-gray-400">Joined: January 2021</p>
+          <h2 className="text-2xl font-bold text-gray-800">{props.name}</h2>
+          <p className="text-sm text-gray-400">{props.joinDate}</p>
         </div>
       </div>
 
