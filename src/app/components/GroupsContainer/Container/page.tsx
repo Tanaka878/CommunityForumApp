@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { FaCog } from "react-icons/fa";
 import Explore from "../../Explore/page";
 import SearchBar from "../../SearchBar/SearchBar";
+import { FaThumbtack } from "react-icons/fa";
+import PinnedChat from "../../PinnedChats/page";
 
 // Define the type for the user object
 interface User {
@@ -86,8 +88,22 @@ const HomePage = () => {
       </nav>
 
     {/**Container for search bar */}
-      <nav>
+      <nav className="mb-2 p-1">
         <SearchBar onSearch={Search}/>
+
+      </nav>
+
+{/**Container for Pinend chats */}
+      <nav>
+        <h1 className="flex font-semibold rounded-lg space-x-3">
+          <FaThumbtack/>
+          Pinned Communities
+        </h1>
+
+        <nav className="rounded-lg bg-slate-300 mt-2 flex space-x-2">
+          <PinnedChat/>
+
+        </nav>
 
       </nav>
       
