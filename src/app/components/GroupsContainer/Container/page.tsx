@@ -100,12 +100,16 @@ const HomePage = () => {
           Pinned Communities
         </h1>
 
-        <nav className="rounded-lg bg-slate-300 mt-2 flex space-x-2">
+        <nav className="rounded-lg bg-slate-300 mt-2 flex space-x-2 p-1 overflow-x-auto w-full">
           <PinnedChat/>
-
+          <PinnedChat/>
+          <PinnedChat/>
+          <PinnedChat/>
         </nav>
 
       </nav>
+
+      {/**All communites Joined by uuser */}
       
 
      
