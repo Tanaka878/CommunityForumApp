@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaComment } from "react-icons/fa";
 import Explore from "../../Explore/page";
 import SearchBar from "../../SearchBar/SearchBar";
 import { FaThumbtack } from "react-icons/fa";
@@ -110,6 +110,16 @@ const HomePage = () => {
       </nav>
 
       {/**All communites Joined by uuser */}
+
+      <nav className="mt-1 p-1">
+        <h1 className="flex font-semibold space-x-1">
+          <FaComment/>
+          My Communities
+        </h1>
+        <nav>
+          
+        </nav>
+      </nav>
       
 
      
