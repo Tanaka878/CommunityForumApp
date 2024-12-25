@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 
-const ProfileImage = (props) => {
+const ProfileImage = () => {
   const [image, setImage] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
