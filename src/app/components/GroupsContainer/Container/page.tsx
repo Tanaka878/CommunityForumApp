@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCog } from "react-icons/fa";
+import Explore from "../../Explore/page";
 
 // Define the type for the user object
 interface User {
@@ -71,6 +72,9 @@ const HomePage = () => {
       </nav>
 
       {/** For containing exploration Communities*/}
+      <nav className="p-5">
+        <Explore/>
+      </nav>
       
 
      
