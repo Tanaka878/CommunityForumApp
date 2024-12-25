@@ -3,8 +3,8 @@ import { FaUser} from 'react-icons/fa'
 
 const Explore = () => {
   return (
-    <div className='p-4 bg-gray-400 rounded-full  h-12 w-12'>
-        <button>
+    <div className='p-4 bg-gray-400 rounded-lg  h-12 w-12'>
+        <button className=''>
             <FaUser/>
         </button>
       

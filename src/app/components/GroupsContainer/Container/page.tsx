@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCog } from "react-icons/fa";
 import Explore from "../../Explore/page";
+import SearchBar from "../../SearchBar/SearchBar";
 
 // Define the type for the user object
 interface User {
@@ -61,6 +62,11 @@ const HomePage = () => {
     throw new Error("Function not implemented.");
   }
 
+  function Search(query: string): void {
+    console.log(query)
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div>
       <nav className="flex mx-auto justify-between p-2">
@@ -72,8 +78,17 @@ const HomePage = () => {
       </nav>
 
       {/** For containing exploration Communities*/}
-      <nav className="p-5">
+      <nav className="p-5 flex space-x-3">
         <Explore/>
+        <Explore/>
+        <Explore/>
+        <Explore/>
+      </nav>
+
+    {/**Container for search bar */}
+      <nav>
+        <SearchBar onSearch={Search}/>
+
       </nav>
       
 
