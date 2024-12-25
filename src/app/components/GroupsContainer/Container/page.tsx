@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { FaCog } from "react-icons/fa";
 
 // Define the type for the user object
 interface User {
@@ -21,6 +22,7 @@ const HomePage = () => {
       return;
     }
 
+   
     // Validate token with backend
     axios
       .get<User>("http://localhost:8080/api/v1/demo-controller/fetch", {
@@ -54,9 +56,27 @@ const HomePage = () => {
     return <div>Loading...</div>;
   }
 
+  function Settings(): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div>
-      {}
+      <nav className="flex mx-auto justify-between p-2">
+          <h2 className="font-bold font-serif">Messages</h2>
+          <button onClick={Settings}>
+            <FaCog className="bg-blend-color-burn"></FaCog>
+          </button>
+
+      </nav>
+
+      {/** For containing exploration Communities*/}
+      
+
+     
+    
+
+
       
 
     {/*
