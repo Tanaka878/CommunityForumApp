@@ -7,6 +7,7 @@ import Explore from "../../Explore/page";
 import SearchBar from "../../SearchBar/SearchBar";
 import { FaThumbtack } from "react-icons/fa";
 import PinnedChat from "../../PinnedChats/page";
+import ChatDisplay from "../../AllChats/page";
 
 // Define the type for the user object
 interface User {
@@ -116,7 +117,10 @@ const HomePage = () => {
           <FaComment/>
           My Communities
         </h1>
-        <nav>
+        <nav className="space-y-1">
+          <ChatDisplay/>
+          <ChatDisplay/>
+          <ChatDisplay/>
           
         </nav>
       </nav>
