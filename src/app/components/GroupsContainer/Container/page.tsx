@@ -1,11 +1,11 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { FaCog, FaComment } from "react-icons/fa";
+import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
 import Explore from "../../Explore/page";
 import SearchBar from "../../SearchBar/SearchBar";
-import { FaThumbtack } from "react-icons/fa";
 import PinnedChat from "../../PinnedChats/page";
 import ChatDisplay from "../../AllChats/page";
 
@@ -17,7 +17,7 @@ interface User {
 
 const HomePage = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null); // State is either User or null
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,7 +27,6 @@ const HomePage = () => {
       return;
     }
 
-   
     // Validate token with backend
     axios
       .get<User>("http://localhost:8080/api/v1/demo-controller/fetch", {
@@ -36,7 +35,7 @@ const HomePage = () => {
         },
       })
       .then((response) => {
-        setUser(response.data); // Update state with user data
+        setUser(response.data);
         console.log("User data:", response.data.email);
       })
       .catch((error) => {
@@ -45,8 +44,12 @@ const HomePage = () => {
       });
   }, [router]);
 
- /* const handleSearch = () => {
-    console.log("Search triggered");
+  const handleSettings = () => {
+    console.log("Settings clicked");
+  };
+
+  const handleSearch = (query: string) => {
+    console.log("Search query:", query);
   };
 
   const handleLogout = () => {
@@ -54,95 +57,70 @@ const HomePage = () => {
     console.log("User logged out");
     window.location.href = "/";
   };
-  */
 
   if (!user) {
-    // Optionally show a loading spinner or placeholder while user data is being fetched
-    return <div>Loading...</div>;
-  }
-
-  function Settings(): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function Search(query: string): void {
-    console.log(query)
-    throw new Error("Function not implemented.");
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
   return (
-    <div>
-      <nav className="flex mx-auto justify-between p-2">
-          <h2 className="font-bold font-serif">Messages</h2>
-          <button onClick={Settings}>
-            <FaCog className="bg-blend-color-burn"></FaCog>
-          </button>
-
+    <div className="min-h-screen bg-gray-100">
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-4 py-2 bg-white shadow">
+        <h2 className="text-lg font-bold font-serif">Messages</h2>
+        <button onClick={handleSettings}>
+          <FaCog className="text-gray-600 hover:text-gray-800 transition" />
+        </button>
       </nav>
 
-      {/** For containing exploration Communities*/}
-      <nav className="p-5 flex space-x-3">
-        <Explore/>
-        <Explore/>
-        <Explore/>
-        <Explore/>
-      </nav>
+      {/* Explore Section */}
+      <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg">
+        <Explore />
+        <Explore />
+        <Explore />
+        <Explore />
+      </section>
 
-    {/**Container for search bar */}
-      <nav className="mb-2 p-1">
-        <SearchBar onSearch={Search}/>
+      {/* Search Bar */}
+      <section className="mt-4 px-4">
+        <SearchBar onSearch={handleSearch} />
+      </section>
 
-      </nav>
-
-{/**Container for Pinend chats */}
-      <nav>
-        <h1 className="flex font-semibold rounded-lg space-x-3">
-          <FaThumbtack/>
+      {/* Pinned Communities */}
+      <section className="mt-6 px-4">
+        <h1 className="flex items-center text-lg font-semibold">
+          <FaThumbtack className="mr-2" />
           Pinned Communities
         </h1>
+        <div className="flex mt-2 space-x-3 overflow-x-auto bg-gray-200 p-2 rounded-lg">
+          <PinnedChat />
+          <PinnedChat />
+          <PinnedChat />
+          <PinnedChat />
+        </div>
+      </section>
 
-        <nav className="rounded-lg bg-slate-300 mt-2 flex space-x-2 p-1 overflow-x-auto w-full">
-          <PinnedChat/>
-          <PinnedChat/>
-          <PinnedChat/>
-          <PinnedChat/>
-        </nav>
-
-      </nav>
-
-      {/**All communites Joined by uuser */}
-
-      <nav className="mt-1 p-1">
-        <h1 className="flex font-semibold space-x-1">
-          <FaComment/>
+      {/* My Communities */}
+      <section className="mt-6 px-4">
+        <h1 className="flex items-center text-lg font-semibold">
+          <FaComment className="mr-2" />
           My Communities
         </h1>
-        <nav className="space-y-1">
-          <ChatDisplay/>
-          <ChatDisplay/>
-          <ChatDisplay/>
-          
-        </nav>
-      </nav>
-      
+        <div className="space-y-2 mt-1">
+          <ChatDisplay />
+          <ChatDisplay />
+          <ChatDisplay />
+        </div>
+      </section>
 
-     
-    
-
-
-      
-
-    {/*
-     <div className="flex justify-center mt-6">
+      {/* Logout Button */}
+      <div className="flex justify-center mt-8">
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-red-500 text-white font-bold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transform transition-transform duration-200 ease-in-out hover:scale-105"
+          className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
         >
           Logout
         </button>
       </div>
-    */ }  {/* Logout Button */}
-     
     </div>
   );
 };
