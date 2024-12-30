@@ -1,7 +1,15 @@
-import React from 'react';
-import { ArrowLeft, MoreVertical, Phone, Video } from 'lucide-react';
+'use client'
+import React, { useState } from 'react';
+import { ArrowLeft, MoreVertical, Phone, Video, Users } from 'lucide-react';
 
 const ChatNavBar = () => {
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = () => {
+    setIsJoined(true);
+    // Here you would typically make an API call to update the user's membership status
+  };
+
   return (
     <div className="flex items-center justify-between bg-gray-800 text-white p-2 h-16">
       {/* Left section with back button and profile */}
@@ -30,6 +38,15 @@ const ChatNavBar = () => {
 
       {/* Right section with action buttons */}
       <div className="flex items-center space-x-2">
+        {!isJoined && (
+          <button 
+            onClick={handleJoin}
+            className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+          >
+            <Users size={18} />
+            <span className="text-sm">Join Community</span>
+          </button>
+        )}
         <button className="p-2 hover:bg-gray-700 rounded-full">
           <Video size={24} />
         </button>
