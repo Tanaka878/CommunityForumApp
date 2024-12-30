@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, Phone, Video, Users } from 'lucide-react';
 
@@ -30,7 +30,7 @@ const ChatNavBar = () => {
           
           {/* Chat Info */}
           <div className="flex flex-col">
-            <span className="font-semibold text-base">Chat Name</span>
+            <span className="font-semibold text-base text-sm sm:text-base">Chat Name</span>
             <span className="text-xs text-gray-300">online</span>
           </div>
         </div>
@@ -41,10 +41,10 @@ const ChatNavBar = () => {
         {!isJoined && (
           <button 
             onClick={handleJoin}
-            className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+            className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-xs sm:text-sm"
           >
             <Users size={18} />
-            <span className="text-sm">Join Community</span>
+            <span>Join Community</span>
           </button>
         )}
         <button className="p-2 hover:bg-gray-700 rounded-full">
