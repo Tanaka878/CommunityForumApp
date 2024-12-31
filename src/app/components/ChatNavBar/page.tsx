@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { ArrowLeft, MoreVertical, Phone, Video, Users } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Phone,Users } from 'lucide-react';
 
 const ChatNavBar = () => {
   const [isJoined, setIsJoined] = useState(false);
@@ -47,9 +47,9 @@ const ChatNavBar = () => {
             <span>Join Community</span>
           </button>
         )}
-        <button className="p-2 hover:bg-gray-700 rounded-full">
+       {/*  <button className="p-2 hover:bg-gray-700 rounded-full">
           <Video size={24} />
-        </button>
+        </button> */}
         <button className="p-2 hover:bg-gray-700 rounded-full">
           <Phone size={24} />
         </button>

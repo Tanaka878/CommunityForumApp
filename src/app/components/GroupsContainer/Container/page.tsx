@@ -9,7 +9,6 @@ import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
 import ChatDisplay from "../../AllChats/page";
 
-// Define the type for the user object
 interface User {
   email: string;
   localDate: string;
