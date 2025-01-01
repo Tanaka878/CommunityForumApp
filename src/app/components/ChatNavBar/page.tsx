@@ -2,14 +2,22 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, Phone,Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 
+interface ExploreProps {
+  image: string | StaticImageData; 
+  alt?: string; 
+  groupId: number;
+  groupName: string;
+  descrip: string;
+}
 
-
-const ChatNavBar = () => {
+const ChatNavBar: React.FC<ExploreProps> = ({ image, alt = "", groupId, groupName, descrip })  => {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter()
 
+  console.log(groupId)
+  console.log(descrip)
   /** */
   function handleNavigation(){
     router.push('/components/GroupsContainer/Container')
@@ -33,8 +41,8 @@ const ChatNavBar = () => {
           {/* Profile Picture */}
           <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
             <Image 
-              src="/api/placeholder/40/40" 
-              alt="Profile" 
+              src={image} 
+              alt={alt}
               fill
               className="w-full h-full object-cover"
             />
@@ -42,7 +50,7 @@ const ChatNavBar = () => {
           
           {/* Chat Info */}
           <div className="flex flex-col">
-            <span className="font-semibold  text-sm sm:text-base">{''}</span>
+            <span className="font-semibold  text-sm sm:text-base">{groupName}</span>
             <span className="text-xs text-gray-300">online</span>
           </div>
         </div>

@@ -123,6 +123,7 @@ const HomePage = () => {
         groupId={community.id}
         image={pictureSelection(community.id)} 
         groupName={community.communityName}
+        description={community.communityDescription}
       />
     ))
   )}

@@ -5,22 +5,28 @@ import { useRouter } from 'next/navigation';
 interface ExploreProps {
   image: string | StaticImageData; 
   alt?: string; 
-  groupId:number
-  groupName:string
-  
+  groupId: number;
+  groupName: string;
+  description: string;
 }
 
-const Explore: React.FC<ExploreProps> = ({ image, alt = '' , groupId}, groupName) => {
+const Explore: React.FC<ExploreProps> = ({ image, alt = "", groupId, groupName, description }) => {
+  const router = useRouter();
 
-  const router = useRouter()
-  function handleClick(){
-    console.log("the group Name : " , groupName)
-    console.log("Explore Div clicked  :" , groupId)
-
-    router.push('/components/ChatLayout')
-
-
+  function handleClick() {
+    console.log("The group name:", groupName);
+    console.log("Description:", description);
+    console.log("Explore Div clicked:", groupId);
+  
+    // Navigate to a specific route with query parameters
+    router.push(
+      `/components/ChatLayout?id=${groupId}&description=${encodeURIComponent(
+        description
+      )}&groupName=${encodeURIComponent(groupName)}`
+    );
   }
+  
+
   return (
     <div className=" bg-gray-400 rounded-lg h-12 w-12 relative" onClick={handleClick}>
       <button className="relative h-full w-full">
