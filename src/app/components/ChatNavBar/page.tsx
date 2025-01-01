@@ -1,19 +1,30 @@
 'use client';
 import React, { useState } from 'react';
 import { ArrowLeft, MoreVertical, Phone,Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+
 
 const ChatNavBar = () => {
   const [isJoined, setIsJoined] = useState(false);
+  const router = useRouter()
+
+  /** */
+  function handleNavigation(){
+    router.push('/components/GroupsContainer/Container')
+
+  }
 
   const handleJoin = () => {
     setIsJoined(true);
-    // Here you would typically make an API call to update the user's membership status
+    // To be implemented
   };
 
   return (
     <div className="flex items-center justify-between bg-gray-800 text-white p-2 h-16">
       {/* Left section with back button and profile */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3" onClick={handleNavigation}>
         <button className="p-2 hover:bg-gray-700 rounded-full">
           <ArrowLeft size={24} />
         </button>
@@ -21,16 +32,17 @@ const ChatNavBar = () => {
         <div className="flex items-center space-x-3">
           {/* Profile Picture */}
           <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-            <img 
+            <Image 
               src="/api/placeholder/40/40" 
               alt="Profile" 
+              fill
               className="w-full h-full object-cover"
             />
           </div>
           
           {/* Chat Info */}
           <div className="flex flex-col">
-            <span className="font-semibold text-base text-sm sm:text-base">Chat Name</span>
+            <span className="font-semibold  text-sm sm:text-base">{''}</span>
             <span className="text-xs text-gray-300">online</span>
           </div>
         </div>

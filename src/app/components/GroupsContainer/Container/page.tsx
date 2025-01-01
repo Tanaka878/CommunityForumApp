@@ -19,6 +19,7 @@ interface CommunityData {
   communityName: string;
   communityDescription: string;
   communitySize: number;
+  groupName: string
 }
 
 const HomePage = () => {
@@ -27,11 +28,24 @@ const HomePage = () => {
   const [communities, setCommunities] = useState<CommunityData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  /**Logic for picture selection */
+  function pictureSelection(communityId: number): string {
+    switch (communityId) {
+        case 1:
+            return "/Images/music-lover.webp";
+        case 2:
+            return "/Images/food-lover.png";
+        default:
+            return "/Images/animal-lover.jpeg";
+    }
+}
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found, redirecting to login");
-      router.push("/components/SignUp");
+      router.push("/components/Login");
       return;
     }
 
@@ -100,18 +114,20 @@ const HomePage = () => {
 
       {/* Explore Section */}
       <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg overflow-x-auto">
-        {error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          communities.map((community) => (
-            <Explore
-              key={community.id}
-              image="/Images/music-lover.webp" // Replace with dynamic images if available
-              
-            />
-          ))
-        )}
-      </section>
+  {error ? (
+    <p className="text-red-500">{error}</p>
+  ) : (
+    communities.map((community) => (
+      <Explore
+        key={community.id}
+        groupId={community.id}
+        image={pictureSelection(community.id)} 
+        groupName={community.communityName}
+      />
+    ))
+  )}
+</section>
+
 
       {/* Search Bar */}
       <section className="mt-4 px-4">
