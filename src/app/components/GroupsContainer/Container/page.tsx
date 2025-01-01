@@ -14,9 +14,18 @@ interface User {
   localDate: string;
 }
 
+interface CommunityData {
+  id: number;
+  communityName: string;
+  communityDescription: string;
+  communitySize: number;
+}
+
 const HomePage = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [communities, setCommunities] = useState<CommunityData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -42,6 +51,24 @@ const HomePage = () => {
         router.push("/components/SignUp");
       });
   }, [router]);
+
+  const fetchCommunities = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/communities/getAll"); // Replace with your actual backend URL
+      if (!response.ok) {
+        console.log("data fetched")
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setCommunities(data);
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommunities();
+  }, []);
 
   const handleSettings = () => {
     console.log("Settings clicked");
@@ -72,11 +99,18 @@ const HomePage = () => {
       </nav>
 
       {/* Explore Section */}
-      <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg">
-        <Explore />
-        <Explore />
-        <Explore />
-        <Explore />
+      <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg overflow-x-auto">
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          communities.map((community) => (
+            <Explore
+              key={community.id}
+              image="/Images/music-lover.webp" // Replace with dynamic images if available
+              
+            />
+          ))
+        )}
       </section>
 
       {/* Search Bar */}

@@ -2,19 +2,23 @@ import React from 'react';
 import Image, { StaticImageData } from 'next/image';
 
 interface ExploreProps {
-  image: string | StaticImageData; // Accepts either a string or StaticImageData
-  alt?: string; // Optional alt text
+  image: string | StaticImageData; 
+  alt?: string; 
 }
 
-const Explore: React.FC<ExploreProps> = ({ image, alt = 'Explore icon' }) => {
+const Explore: React.FC<ExploreProps> = ({ image, alt = '' }) => {
+  function handleClick(){
+    console.log("Explore Div clicked")
+  }
   return (
-    <div className="p-4 bg-gray-400 rounded-lg h-12 w-12 relative">
+    <div className=" bg-gray-400 rounded-lg h-12 w-12 relative" onClick={handleClick}>
       <button className="relative h-full w-full">
         <Image
-          src={image} // Dynamic image URL from props
-          alt={alt} // Use the provided alt text or default value
-          fill // Makes the image fill its container
-          className="rounded-full object-cover" // Ensures the image is circular and cropped properly
+          src={image} 
+          alt={alt} 
+          fill
+          
+          className="rounded-full object-cover" 
         />
       </button>
     </div>

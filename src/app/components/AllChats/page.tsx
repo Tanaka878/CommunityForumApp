@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Explore from '../Explore/page'
 import LastMessage from '../LastMessage/page'
