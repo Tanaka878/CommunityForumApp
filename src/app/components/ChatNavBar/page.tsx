@@ -5,20 +5,21 @@ import { ArrowLeft, MoreVertical, Phone, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
 
-interface ExploreProps {
-  image: string | StaticImageData; 
-  alt?: string; 
+// Renaming the interface to match the component
+interface ChatNavBarProps {
+  image: string | StaticImageData;
+  alt?: string;
   groupId: number;
   groupName: string;
-  description: string; // Changed from 'descrip' to 'description' for consistency
+  description: string;  // Consistency in naming
 }
 
-const ChatNavBar: React.FC<ExploreProps> = ({ image, alt = "", groupId, groupName, description }) => {
+const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt = "", groupId, groupName, description }) => {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
 
   function handleNavigation() {
-    console.log(description,groupId)
+    console.log(description, groupId);
     router.push('/components/GroupsContainer/Container');
   }
 
