@@ -47,19 +47,21 @@ const initialMessages: Message[] = [
 const ChatArea: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  //const [suggestions, setSuggestions] = useState<string[]>([]);
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewMessage(value);
 
-    const mentionTrigger = value.split(' ').pop();
+   /*  const mentionTrigger = value.split(' ').pop();
     if (mentionTrigger && mentionTrigger.startsWith('@')) {
       setSuggestions(['JohnDoe', 'JaneSmith', 'Admin']);
     } else {
       setSuggestions([]);
     }
+   */
+
   };
 
   const handleSendMessage = () => {
