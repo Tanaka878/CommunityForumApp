@@ -43,7 +43,8 @@ const ChatNavBar: React.FC<ExploreProps> = ({ image, alt = "", groupId, groupNam
             <Image 
               src={image} 
               alt={alt}
-              fill
+              height={30}
+              width={30}
               className="w-full h-full object-cover"
             />
           </div>

@@ -17,12 +17,12 @@ const ChatLayout = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen py-5">
       {/* Navigation Bar */}
-      <ChatNavBar groupName={groupName} descrip={description} image={''} groupId={0}  />
+      <ChatNavBar groupName={groupName} descrip={description} image={'/Images/music-lover.webp'} groupId={0}  />
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="">
         <ChatArea />
       </div>
     </div>

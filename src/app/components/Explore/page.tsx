@@ -10,7 +10,7 @@ interface ExploreProps {
   description: string;
 }
 
-const Explore: React.FC<ExploreProps> = ({ image, alt = "", groupId, groupName, description }) => {
+const Explore: React.FC<ExploreProps> = ({ image, alt = "Image", groupId, groupName, description }) => {
   const router = useRouter();
 
   function handleClick() {
