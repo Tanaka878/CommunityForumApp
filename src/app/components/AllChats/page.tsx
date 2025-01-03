@@ -16,8 +16,8 @@ const ChatDisplay = () => {
     /**For displaying non pinned chats on home page */
   return (
     <div className='flex' onClick={OpenCummunity}>
-        <Explore groupId={1} 
-        image={''}/>
+        <Explore groupId={1}
+      image={'/Images/animal-lover.jpeg'} groupName={'Tanaka'} description={'Hello'}/>
         <LastMessage/>
 
       
