@@ -19,7 +19,7 @@ interface CommunityData {
   communityName: string;
   communityDescription: string;
   communitySize: number;
-  groupName: string
+  groupName: string;
 }
 
 const HomePage = () => {
@@ -28,18 +28,17 @@ const HomePage = () => {
   const [communities, setCommunities] = useState<CommunityData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  /**Logic for picture selection */
+  /** Logic for picture selection */
   function pictureSelection(communityId: number): string {
     switch (communityId) {
-        case 1:
-            return "/Images/music-lover.webp";
-        case 2:
-            return "/Images/food-lover.png";
-        default:
-            return "/Images/animal-lover.jpeg";
+      case 1:
+        return "/Images/music-lover.webp";
+      case 2:
+        return "/Images/food-lover.png";
+      default:
+        return "/Images/animal-lover.jpeg";
     }
-}
-
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -70,7 +69,6 @@ const HomePage = () => {
     try {
       const response = await fetch("http://localhost:8080/api/communities/getAll"); // Replace with your actual backend URL
       if (!response.ok) {
-        console.log("data fetched")
         throw new Error(`Error: ${response.statusText}`);
       }
       const data = await response.json();
@@ -103,7 +101,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar */}
       <nav className="flex items-center justify-between px-4 py-2 bg-white shadow">
         <h2 className="text-lg font-bold font-serif">Messages</h2>
@@ -114,21 +112,20 @@ const HomePage = () => {
 
       {/* Explore Section */}
       <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg overflow-x-auto">
-  {error ? (
-    <p className="text-red-500">{error}</p>
-  ) : (
-    communities.map((community) => (
-      <Explore
-        key={community.id}
-        groupId={community.id}
-        image={pictureSelection(community.id)} 
-        groupName={community.communityName}
-        description={community.communityDescription}
-      />
-    ))
-  )}
-</section>
-
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          communities.map((community) => (
+            <Explore
+              key={community.id}
+              groupId={community.id}
+              image={pictureSelection(community.id)}
+              groupName={community.communityName}
+              description={community.communityDescription}
+            />
+          ))
+        )}
+      </section>
 
       {/* Search Bar */}
       <section className="mt-4 px-4">
@@ -150,21 +147,21 @@ const HomePage = () => {
       </section>
 
       {/* My Communities */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 flex-grow">
         <h1 className="flex items-center text-lg font-semibold">
           <FaComment className="mr-2" />
           My Communities
         </h1>
-        <div className="space-y-2 mt-1">
-         <NoData/>
+        <div className="flex items-center justify-center">
+          <NoData />
         </div>
       </section>
 
       {/* Logout Button */}
-      <div className="flex justify-center mt-8">
+      <div className="sticky bottom-0 bg-white shadow p-4">
         <button
           onClick={handleLogout}
-          className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
+          className="w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
         >
           Logout
         </button>
