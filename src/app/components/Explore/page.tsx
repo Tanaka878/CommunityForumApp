@@ -4,7 +4,7 @@ import React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
 
-// Renaming the interface to match the component
+
 interface ExploreProps {
   image: string | StaticImageData;
   alt?: string;
@@ -21,7 +21,7 @@ const Explore: React.FC<ExploreProps> = ({ image, alt = "Image", groupId, groupN
     console.log("Description:", description);
     console.log("Explore Div clicked:", groupId);
 
-    // Navigate to a specific route with query parameters
+    
     router.push(
       `/components/ChatLayout?id=${groupId}&description=${encodeURIComponent(
         description

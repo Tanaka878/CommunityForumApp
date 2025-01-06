@@ -1,3 +1,5 @@
+// src/app/components/ChatNavBar/page.tsx
+
 'use client';
 
 import React, { useState } from 'react';
@@ -5,22 +7,22 @@ import { ArrowLeft, MoreVertical, Phone, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
 
-// Renaming the interface to match the component
+// Interface for props
 interface ChatNavBarProps {
   image: string | StaticImageData;
-  alt?: string;
+  alt: string;
   groupId: number;
   groupName: string;
-  description: string;  // Consistency in naming
+  description: string;
 }
 
-const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt = "", groupId, groupName, description }) => {
+const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt, groupId, groupName, description }) => {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
 
   function handleNavigation() {
     console.log(description, groupId);
-    router.push('/components/GroupsContainer/Container');
+    router.push(`/groups/${groupId}`); // Dynamic routing based on groupId
   }
 
   const handleJoin = () => {
@@ -29,7 +31,7 @@ const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt = "", groupId, group
 
   return (
     <div className="flex items-center justify-between bg-gray-800 text-white p-2 h-16">
-      <div className="flex items-center space-x-3" onClick={handleNavigation}>
+      <div className="flex items-center space-x-3 cursor-pointer" onClick={handleNavigation}>
         <button className="p-2 hover:bg-gray-700 rounded-full">
           <ArrowLeft size={24} />
         </button>
