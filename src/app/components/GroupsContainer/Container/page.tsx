@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
-import Explore from "../../Explore/page";
+import Explore from "../../Explore/Explore";
 import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
 import NoData from "../../NoData/page";

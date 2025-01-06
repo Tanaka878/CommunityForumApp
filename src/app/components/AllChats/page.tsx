@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import Explore from '../Explore/page'
+import Explore from '../Explore/Explore'
 import LastMessage from '../LastMessage/page'
 import { useRouter } from 'next/navigation'
 

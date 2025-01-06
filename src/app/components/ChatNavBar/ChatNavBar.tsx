@@ -1,5 +1,3 @@
-// src/app/components/ChatNavBar/page.tsx
-
 'use client';
 
 import React, { useState } from 'react';
@@ -7,32 +5,42 @@ import { ArrowLeft, MoreVertical, Phone, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
 
-// Interface for props
-interface ChatNavBarProps {
+function ChatNavBar({
+  image,
+  alt,
+  groupId,
+  groupName,
+  description,
+  onJoin
+}: {
   image: string | StaticImageData;
   alt: string;
   groupId: number;
   groupName: string;
   description: string;
-}
-
-const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt, groupId, groupName, description }) => {
+  onJoin?: (groupId: number) => void;
+}) {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
 
-  function handleNavigation() {
+  const handleNavigation = () => {
     console.log(description, groupId);
-    router.push(`/groups/${groupId}`); // Dynamic routing based on groupId
-  }
+    router.push(`/groups/${groupId}`);
+  };
 
   const handleJoin = () => {
     setIsJoined(true);
+    onJoin?.(groupId);
   };
 
   return (
     <div className="flex items-center justify-between bg-gray-800 text-white p-2 h-16">
       <div className="flex items-center space-x-3 cursor-pointer" onClick={handleNavigation}>
-        <button className="p-2 hover:bg-gray-700 rounded-full">
+        <button
+          className="p-2 hover:bg-gray-700 rounded-full"
+          type="button"
+          aria-label="Go back"
+        >
           <ArrowLeft size={24} />
         </button>
         <div className="flex items-center space-x-3">
@@ -40,9 +48,10 @@ const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt, groupId, groupName,
             <Image
               src={image}
               alt={alt}
-              height={30}
-              width={30}
+              height={40}
+              width={40}
               className="w-full h-full object-cover"
+              priority
             />
           </div>
           <div className="flex flex-col">
@@ -51,25 +60,36 @@ const ChatNavBar: React.FC<ChatNavBarProps> = ({ image, alt, groupId, groupName,
           </div>
         </div>
       </div>
+      
       <div className="flex items-center space-x-2">
         {!isJoined && (
           <button
             onClick={handleJoin}
             className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-xs sm:text-sm"
+            type="button"
+            aria-label="Join Community"
           >
             <Users size={18} />
             <span>Join Community</span>
           </button>
         )}
-        <button className="p-2 hover:bg-gray-700 rounded-full">
+        <button
+          className="p-2 hover:bg-gray-700 rounded-full"
+          type="button"
+          aria-label="Start call"
+        >
           <Phone size={24} />
         </button>
-        <button className="p-2 hover:bg-gray-700 rounded-full">
+        <button
+          className="p-2 hover:bg-gray-700 rounded-full"
+          type="button"
+          aria-label="More options"
+        >
           <MoreVertical size={24} />
         </button>
       </div>
     </div>
   );
-};
+}
 
 export default ChatNavBar;
