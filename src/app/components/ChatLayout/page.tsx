@@ -24,7 +24,7 @@ const ChatLayoutContent = () => {
         description={description}
         image={'/Images/music-lover.webp'}
         groupId={parseInt(id, 10)}
-        alt=""
+        alt="Image"
       />
 
       {/* Chat Area */}
