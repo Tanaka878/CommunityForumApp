@@ -1,17 +1,17 @@
 'use client';
+
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ChatArea from '../ChatData/Post';
-import ChatNavBar from '../ChatNavBar/page';
+import ChatNavBar from '../ChatNavBar/ChatNavBar';
 
-const ChatLayout = () => {
-  // Fetching the user details from the router
+const ChatLayoutContent = () => {
   const searchParams = useSearchParams();
 
-  const id = searchParams.get("id") || 90;
+  const id = searchParams.get("id") || "90";
   const description = searchParams.get("description") || "No description available.";
   const groupName = searchParams.get("groupName") || "Unnamed Group";
 
-  // Basic error handling for missing data
   if (!id || !groupName || !description) {
     return <div>Error: Missing required data.</div>;
   }
@@ -19,13 +19,27 @@ const ChatLayout = () => {
   return (
     <div className="flex flex-col h-screen py-5">
       {/* Navigation Bar */}
-      <ChatNavBar groupName={groupName} description={description} image={'/Images/music-lover.webp'} groupId={0}  />
+      <ChatNavBar
+        groupName={groupName}
+        description={description}
+        image={'/Images/music-lover.webp'}
+        groupId={parseInt(id, 10)}
+        alt=""
+      />
 
       {/* Chat Area */}
       <div className="">
         <ChatArea />
       </div>
     </div>
+  );
+};
+
+const ChatLayout = () => {
+  return (
+    <Suspense fallback={<div>Loading Chat...</div>}>
+      <ChatLayoutContent />
+    </Suspense>
   );
 };
 
