@@ -7,7 +7,7 @@ import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
 import Explore from "../../Explore/page";
 import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
-import ChatDisplay from "../../AllChats/page";
+import NoData from "../../NoData/page";
 
 interface User {
   email: string;
@@ -156,9 +156,7 @@ const HomePage = () => {
           My Communities
         </h1>
         <div className="space-y-2 mt-1">
-          <ChatDisplay />
-          <ChatDisplay />
-          <ChatDisplay />
+         <NoData/>
         </div>
       </section>
 

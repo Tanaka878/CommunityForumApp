@@ -16,6 +16,7 @@
     "axios": "^1.7.9",
     "components": "^0.1.0",
     "heroicons": "^2.2.0",
+    "lottie-react": "^2.4.0",
     "lucide-react": "^0.468.0",
     "next": "^15.0.3",
     "next-auth": "^4.24.10",
