@@ -8,6 +8,8 @@ import Explore from "../../Explore/Explore";
 import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
 import NoData from "../../NoData/page";
+import BASE_URL from '@/app/config/api';
+
 
 interface User {
   email: string;
@@ -50,7 +52,7 @@ const HomePage = () => {
 
     // Validate token with backend
     axios
-      .get<User>("http://localhost:8080/api/v1/demo-controller/fetch", {
+      .get<User>(`${BASE_URL}/api/v1/demo-controller/fetch`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -67,7 +69,7 @@ const HomePage = () => {
 
   const fetchCommunities = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/communities/getAll"); // Replace with your actual backend URL
+      const response = await fetch(`${BASE_URL}/api/communities/getAll`); // Replace with your actual backend URL
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
