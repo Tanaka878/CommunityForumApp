@@ -3,6 +3,8 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import BASE_URL from '@/app/config/api';
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +31,7 @@ const Login = () => {
     const credentials = { email, password };
   
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/authenticate/', {
+      const response = await fetch(`${BASE_URL}/api/v1/auth/authenticate/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

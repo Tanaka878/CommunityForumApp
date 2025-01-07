@@ -25,10 +25,11 @@ function ChatNavBar({
 
   const handleNavigation = () => {
     console.log(description, groupId);
-    router.push(`/groups/${groupId}`);
+    router.push(`/components/GroupsContainer/Container`);
   };
 
   const handleJoin = () => {
+    
     setIsJoined(true);
     onJoin?.(groupId);
   };
@@ -70,7 +71,7 @@ function ChatNavBar({
             aria-label="Join Community"
           >
             <Users size={18} />
-            <span>Join Community</span>
+            <span>Join</span>
           </button>
         )}
         <button
