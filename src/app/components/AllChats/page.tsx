@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BASE_URL from '@/app/config/api';
@@ -32,8 +33,6 @@ const GroupPreview = ({
     // You can navigate to a group-specific page or perform any action
     // Example: router.push(`/group/${id}`);
   };
-
-  
 
   return (
     <div
@@ -74,9 +73,6 @@ const GroupList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Replace with actual email or dynamically fetch it
-  const email = localStorage.getItem("email") 
-
   function pictureSelection(communityId: number): string {
     switch (communityId) {
       case 1:
@@ -91,12 +87,21 @@ const GroupList = () => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
+        const storedEmail =
+          typeof window !== 'undefined' ? localStorage.getItem('email') : null;
+
+        if (!storedEmail) {
+          setError('Email not found in localStorage.');
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(
-          `${BASE_URL}/api/communities/getCommunities/${email}`, // Adjust URL and port if needed
+          `${BASE_URL}/api/communities/getCommunities/${storedEmail}`,
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           }
         );
@@ -108,15 +113,15 @@ const GroupList = () => {
         const data: CommunityData[] = await response.json();
         setCommunities(data);
       } catch (error) {
-        console.error("Error fetching communities:", error);
-        setError("Failed to fetch communities.");
+        console.error('Error fetching communities:', error);
+        setError('Failed to fetch communities.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchCommunities();
-  }, [email]);
+  }, []);
 
   const desc = 'Hello';
 
@@ -130,18 +135,18 @@ const GroupList = () => {
           <p className="text-red-500">{error}</p>
         ) : communities.length === 0 ? (
           <div className="flex items-center justify-center">
-            <NoData /> {/* Render when no communities are available */}
+            <NoData />
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             {communities.map((community) => (
               <GroupPreview
                 key={community.id}
-                id={community.id} // Attach the unique ID
+                id={community.id}
                 name={community.communityName}
                 lastMessage={desc}
                 timestamp={`${community.communitySize} members`}
-                imageUrl={pictureSelection(community.id)} // Adjust to a real image if available
+                imageUrl={pictureSelection(community.id)}
               />
             ))}
           </div>
