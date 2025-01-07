@@ -9,6 +9,7 @@ import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
 import NoData from "../../NoData/page";
 import BASE_URL from '@/app/config/api';
+import GroupList from "../../AllChats/page";
 
 
 interface User {
@@ -155,7 +156,7 @@ const HomePage = () => {
           My Communities
         </h1>
         <div className="flex items-center justify-center">
-          <NoData />
+          <GroupList/>
         </div>
       </section>
 
