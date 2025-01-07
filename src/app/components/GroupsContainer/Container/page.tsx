@@ -7,7 +7,6 @@ import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
 import Explore from "../../Explore/Explore";
 import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/page";
-import NoData from "../../NoData/page";
 import BASE_URL from '@/app/config/api';
 import GroupList from "../../AllChats/page";
 
