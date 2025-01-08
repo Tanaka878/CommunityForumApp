@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BASE_URL from '@/app/config/api';
+import { useRouter } from 'next/navigation';
 
 // Define the type to match CommunityData
 interface CommunityData {
@@ -19,6 +20,7 @@ interface GroupPreviewProps {
   name: string;
   lastMessage: string;
   timestamp: string;
+  description: string; // Add description prop here
 }
 
 const GroupPreview = ({
@@ -27,13 +29,17 @@ const GroupPreview = ({
   name,
   lastMessage,
   timestamp,
+  description, // Destructure description
 }: GroupPreviewProps) => {
+  const router = useRouter();
+
   const handleGroupClick = () => {
     console.log(`Group ID: ${id}`);
-    
-
-    // You can navigate to a group-specific page or perform any action
-    // Example: router.push(`/group/${id}`);
+    router.push(
+      `/components/ChatLayout?id=${id}&description=${encodeURIComponent(
+        description
+      )}&groupName=${encodeURIComponent(name)}`
+    );
   };
 
   return (
@@ -125,8 +131,6 @@ const GroupList = () => {
     fetchCommunities();
   }, []);
 
-  const desc = 'Hello';
-
   return (
     <section className="mt-6 px-4 flex-grow">
       <div className="w-full max-w-3xl mx-auto p-2">
@@ -145,9 +149,10 @@ const GroupList = () => {
                 key={community.id}
                 id={community.id}
                 name={community.communityName}
-                lastMessage={desc}
+                lastMessage="Sample message" // You can replace this with actual last message logic
                 timestamp={`${community.communitySize} members`}
                 imageUrl={pictureSelection(community.id)}
+                description={community.communityDescription} // Pass the description here
               />
             ))}
           </div>
