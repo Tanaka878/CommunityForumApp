@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
 import Explore from "../../Explore/Explore";
 import SearchBar from "../../SearchBar/SearchBar";
-import PinnedChat from "../../PinnedChats/page";
+import PinnedChat from "../../PinnedChats/PinnedChats";
 import BASE_URL from '@/app/config/api';
 import GroupList from "../../AllChats/page";
 
