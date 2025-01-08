@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ArrowLeft, MoreVertical, Phone, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
+import BASE_URL from '@/app/config/api';
 
 function ChatNavBar({
   image,
@@ -22,14 +23,87 @@ function ChatNavBar({
 }) {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleNavigation = () => {
-    console.log(description, groupId);
+    console.log(description, groupId,loading,error);
     router.push(`/components/GroupsContainer/Container`);
   };
 
+  //checking if user is part of the group
+  interface ApiResponse {
+    status: number;
+    message: string;
+  }
+
+  // Function to check user membership
+  async function checkUserMembership(groupId: number): Promise<ApiResponse> {
+    const email = localStorage.getItem("email");
+
+    if (!email) {
+      return {
+        status: 400,
+        message: "Email not found in local storage",
+        
+      };
+    }
+    console.log('check for user membership')
+
+    const endpoint = `${BASE_URL}/api/communities/isMember/${encodeURIComponent(email)}/${groupId}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const message = await response.text(); // Assuming the backend sends plain text as the message body.
+
+      return {
+        status: response.status,
+        message: message,
+      };
+    } catch (error) {
+      console.error("Error checking user membership:", error);
+      return {
+        status: 500,
+        message: "An error occurred while connecting to the server.",
+      };
+    }
+  }
+
+  // Memoize the updateMembershipStatus function to avoid unnecessary re-renders
+  const updateMembershipStatus = useCallback(async (groupId: number) => {
+    setLoading(true);
+    setError(null); // Reset previous errors
+
+    try {
+      const response = await checkUserMembership(groupId);
+
+      if (response.status === 200) {
+        setIsJoined(true); // User is part of the group
+      } else if (response.status === 403) {
+        setIsJoined(false); // User is not part of the group
+      } else {
+        setError(response.message); // Handle unexpected responses
+      }
+    } catch (error) {
+      console.error("Error updating membership status:", error);
+      setError("Failed to update membership status.");
+    } finally {
+      setLoading(false); // Stop loading spinner
+    }
+  }, []);
+
+  // Trigger membership status update on groupId change
+  useEffect(() => {
+    updateMembershipStatus(groupId);
+  }, [groupId, updateMembershipStatus]);
+
   const handleJoin = () => {
-    
     setIsJoined(true);
     onJoin?.(groupId);
   };
@@ -61,7 +135,7 @@ function ChatNavBar({
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         {!isJoined && (
           <button

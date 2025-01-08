@@ -30,6 +30,8 @@ const GroupPreview = ({
 }: GroupPreviewProps) => {
   const handleGroupClick = () => {
     console.log(`Group ID: ${id}`);
+    
+
     // You can navigate to a group-specific page or perform any action
     // Example: router.push(`/group/${id}`);
   };
@@ -127,7 +129,6 @@ const GroupList = () => {
 
   return (
     <section className="mt-6 px-4 flex-grow">
-      <h1 className="text-lg font-semibold mb-4">My Communities</h1>
       <div className="w-full max-w-3xl mx-auto p-2">
         {loading ? (
           <p>Loading...</p>
