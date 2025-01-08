@@ -1,3 +1,4 @@
+'use client'
 import Image, { StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -29,7 +30,7 @@ const PinnedChat: React.FC<ExploreProps> = ({ image, alt = "Image", groupId, gro
     /**Containong icons for pinned chats a little bit bigger */
   return (
     <div
-  className="p-4 bg-gray-400 rounded-lg h-36 w-1/2 flex items-center justify-center"
+  className="p-1 bg-gray-400 rounded-lg h-36 w-1/2 flex items-center justify-center"
   onClick={handleClick}
 >
   <button className="h-full w-full">
