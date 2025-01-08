@@ -138,13 +138,23 @@ const HomePage = () => {
       <section className="mt-6 px-4">
         <h1 className="flex items-center text-lg font-semibold">
           <FaThumbtack className="mr-2" />
-          Pinned Communities
+          Popular Communities
         </h1>
         <div className="flex mt-2 space-x-3 overflow-x-auto bg-gray-200 p-2 rounded-lg">
-          <PinnedChat />
-          <PinnedChat />
-          <PinnedChat />
-          <PinnedChat />
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          communities.map((community) => (
+            <PinnedChat
+              key={community.id}
+              groupId={community.id}
+              image={pictureSelection(community.id)}
+              groupName={community.communityName}
+              description={community.communityDescription}
+            />
+          ))
+        )}
+          
         </div>
       </section>
 
