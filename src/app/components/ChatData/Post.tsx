@@ -22,6 +22,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   const [newMessage, setNewMessage] = useState<string>('');
   const [, setReplyingTo] = useState<string | null>(null);
 
+  
   // Fetch messages from the server when the component mounts
   useEffect(() => {
     const fetchMessages = async () => {

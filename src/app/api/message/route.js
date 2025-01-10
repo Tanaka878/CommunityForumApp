@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
-import ConnectMongo from "../../libs/mongodb";
-import Message from "../../models/Message"; // Ensure this is the correct path
+import ConnectMongo from "../../libs/mongodb"; // Adjust path as needed
+//import Message from "../../Model/Message"; // Adjust path as needed
+import Message from "../../components/Model/Message";
 
+
+
+
+// GET: Fetch messages for a community
 export async function GET(request) {
+
   const { searchParams } = new URL(request.url);
   const communityId = searchParams.get("communityId");
+  console.log("Getting messages");
 
   if (!communityId) {
     return NextResponse.json(
@@ -48,6 +55,7 @@ export async function GET(request) {
   }
 }
 
+// POST: Create a new message
 export async function POST(request) {
   try {
     const { sender, text, communityId, mentions, tags } = await request.json();
@@ -79,7 +87,7 @@ export async function POST(request) {
     // Return the newly created message with the id
     return NextResponse.json({
       message: "Message sent",
-      message: {
+      data: {
         id: message._id.toString(),
         sender: message.sender,
         text: message.text,
@@ -96,20 +104,34 @@ export async function POST(request) {
   }
 }
 
-// Route to like a message
+// POST_LIKE: Like a message (fixed to handle request correctly)
 export async function POST_LIKE(request) {
-  const { id } = request.query; // Message ID to like
+  const { id } = await request.json(); // Expecting JSON with message ID
+
+  if (!id) {
+    return NextResponse.json({ error: "Message ID is required" }, { status: 400 });
+  }
 
   try {
+    console.log("Connecting to MongoDB...");
     await ConnectMongo();
+    console.log("Connected to MongoDB!");
+
     const message = await Message.findByIdAndUpdate(
       id,
       { $inc: { likes: 1 } }, // Increment likes count
       { new: true }
     );
 
+    if (!message) {
+      return NextResponse.json({ error: "Message not found" }, { status: 404 });
+    }
+
+    console.log("Message liked:", message);
+
     return NextResponse.json({ message }, { status: 200 });
   } catch (error) {
+    console.error("Error liking message:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
