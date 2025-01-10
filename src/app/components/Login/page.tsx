@@ -48,7 +48,7 @@ const Login = () => {
       // Save the JWT token
       localStorage.setItem('token', data.token);
       localStorage.setItem("email", credentials.email); 
-      localStorage.setItem("id", data.id)
+     
       console.log(localStorage.getItem("email"));
       
       router.push("/components/GroupsContainer/Container")

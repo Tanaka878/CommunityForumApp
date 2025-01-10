@@ -14,6 +14,8 @@ import GroupList from "../../AllChats/page";
 interface User {
   email: string;
   localDate: string;
+  id:string
+
 }
 
 interface CommunityData {
@@ -60,6 +62,9 @@ const HomePage = () => {
       .then((response) => {
         setUser(response.data);
         console.log("User data:", response.data.email);
+        localStorage.setItem("id", response.data.id)
+        localStorage.getItem("id")
+        console.log("The id : ",localStorage.getItem("id"))
       })
       .catch((error) => {
         console.error("Error:", error.response?.statusText || error.message);

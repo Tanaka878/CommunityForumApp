@@ -64,7 +64,7 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea userId={`${id}`} communityId={''} />
+        <ChatArea userId={`${localStorage.getItem("id")}`} communityId={`${id}`} />
       </div>
     </div>
   );
