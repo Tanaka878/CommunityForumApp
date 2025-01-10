@@ -64,7 +64,7 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea />
+        <ChatArea userId={`${id}`} communityId={''} />
       </div>
     </div>
   );
