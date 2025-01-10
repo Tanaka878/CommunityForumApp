@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type Message = {
   id: number;
@@ -12,108 +12,100 @@ type Message = {
   tags?: string[];
 };
 
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    sender: 'John Doe',
-    text: 'Hey, how are you? @JaneSmith #React',
-    time: '12:30 PM',
-    likes: 3,
-    replies: [
-      {
-        id: 2,
-        sender: 'Jane Smith',
-        text: 'I am good, thanks! How about you? #LinkedIn',
-        time: '12:31 PM',
-        likes: 2,
-        replies: [],
-      },
-    ],
-    mentions: ['JaneSmith'],
-    tags: ['React'],
-  },
-  {
-    id: 3,
-    sender: 'Jane Smith',
-    text: 'Are we still on for the meeting later? #TeamSync',
-    time: '11:45 AM',
-    likes: 0,
-    replies: [],
-    mentions: [],
-    tags: ['TeamSync'],
-  },
-];
+type Props = {
+  userId: string; // ID of the logged-in user
+  communityId: string; // ID of the current community
+};
 
-const ChatArea: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
-  //const [suggestions, setSuggestions] = useState<string[]>([]);
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
 
+  // Fetch messages from the server when the component mounts
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(
+          `/api/messages?communityId=${communityId}&userId=${userId}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setMessages(data);
+        } else {
+          console.error('Failed to fetch messages:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+  }, [communityId, userId]);
+
+  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewMessage(value);
-
-   /*  const mentionTrigger = value.split(' ').pop();
-    if (mentionTrigger && mentionTrigger.startsWith('@')) {
-      setSuggestions(['JohnDoe', 'JaneSmith', 'Admin']);
-    } else {
-      setSuggestions([]);
-    }
-   */
-
+    setNewMessage(e.target.value);
   };
 
-  const handleSendMessage = () => {
+  // Send a new message
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
     const mentions = newMessage.match(/@\w+/g)?.map((mention) => mention.slice(1)) || [];
     const tags = newMessage.match(/#\w+/g)?.map((tag) => tag.slice(1)) || [];
 
-    if (replyingTo) {
-      const updatedMessages = messages.map((message) => {
-        if (message.id === replyingTo) {
-          const reply: Message = {
-            id: Date.now(),
-            sender: 'Me',
-            text: newMessage,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            likes: 0,
-            replies: [],
-            mentions,
-            tags,
-          };
-          return { ...message, replies: [...message.replies, reply] };
-        }
-        return message;
+    const newMsg = {
+      sender: userId,
+      text: newMessage,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      likes: 0,
+      replies: [],
+      mentions,
+      tags,
+      communityId,
+    };
+
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMsg),
       });
-      setMessages(updatedMessages);
-    } else {
-      const newMsg: Message = {
-        id: Date.now(),
-        sender: 'Me',
-        text: newMessage,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        likes: 0,
-        replies: [],
-        mentions,
-        tags,
-      };
-      setMessages([...messages, newMsg]);
+
+      if (response.ok) {
+        const savedMessage = await response.json();
+        setMessages((prev) => [...prev, savedMessage]);
+      } else {
+        console.error('Failed to send message:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
 
     setNewMessage('');
     setReplyingTo(null);
   };
 
-  const handleLike = (messageId: number) => {
-    const updatedMessages = messages.map((message) => {
-      if (message.id === messageId) {
-        return { ...message, likes: message.likes + 1 };
+  // Like a message
+  const handleLike = async (messageId: number) => {
+    try {
+      const response = await fetch(`/api/messages/${messageId}/like`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === messageId ? { ...message, likes: message.likes + 1 } : message
+          )
+        );
+      } else {
+        console.error('Failed to like message:', response.statusText);
       }
-      return message;
-    });
-    setMessages(updatedMessages);
+    } catch (error) {
+      console.error('Error liking message:', error);
+    }
   };
 
   return (
