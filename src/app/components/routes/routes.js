@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import ConnectMongo from "../../libs/mongodb";
-import Message from "../../models/Message"; // Assuming you have a Message model.
+import Message from "../../models/Message"; // Ensure this is the correct path
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -20,16 +20,33 @@ export async function GET(request) {
 
     const messages = await Message.find({ communityId })
       .populate("replies") // Fetch nested replies
-      .sort({ time: 1 });  // Sort by time (oldest to newest)
+      .sort({ time: 1 })  // Sort by time (oldest to newest)
+      .lean(); // Return plain objects for better performance
 
-    console.log("Messages fetched:", messages);
-    return NextResponse.json(messages, { status: 200 });
+    // Map the messages to include the id field for consistency
+    const formattedMessages = messages.map((msg) => ({
+      id: msg._id.toString(), // MongoDB _id to id
+      sender: msg.sender,
+      text: msg.text,
+      time: msg.time.toISOString(),
+      likes: msg.likes,
+      replies: msg.replies.map((reply) => ({
+        id: reply._id.toString(),
+        sender: reply.sender,
+        text: reply.text,
+        time: reply.time.toISOString(),
+      })),
+      mentions: msg.mentions,
+      tags: msg.tags,
+    }));
+
+    console.log("Messages fetched:", formattedMessages);
+    return NextResponse.json(formattedMessages, { status: 200 });
   } catch (error) {
     console.error("Error fetching messages:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
 
 export async function POST(request) {
   try {
@@ -53,13 +70,46 @@ export async function POST(request) {
       communityId,
       mentions,
       tags,
+      time: new Date(), // Ensure time is correctly set
       createdAt: new Date(),
     });
+
     console.log("Message created:", message);
 
-    return NextResponse.json({ message: "Message sent", message }, { status: 201 });
+    // Return the newly created message with the id
+    return NextResponse.json({
+      message: "Message sent",
+      message: {
+        id: message._id.toString(),
+        sender: message.sender,
+        text: message.text,
+        time: message.time.toISOString(),
+        likes: message.likes,
+        replies: [],
+        mentions: message.mentions,
+        tags: message.tags,
+      },
+    }, { status: 201 });
   } catch (error) {
     console.error("Error sending message:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// Route to like a message
+export async function POST_LIKE(request) {
+  const { id } = request.query; // Message ID to like
+
+  try {
+    await ConnectMongo();
+    const message = await Message.findByIdAndUpdate(
+      id,
+      { $inc: { likes: 1 } }, // Increment likes count
+      { new: true }
+    );
+
+    return NextResponse.json({ message }, { status: 200 });
+  } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

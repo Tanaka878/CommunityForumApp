@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 type Message = {
-  id: number;
+  id: string; // MongoDB ObjectId as a string
   sender: string;
   text: string;
   time: string;
@@ -20,7 +20,7 @@ type Props = {
 const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [, setReplyingTo] = useState<string | null>(null);
 
   // Fetch messages from the server when the component mounts
   useEffect(() => {
@@ -75,7 +75,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
 
       if (response.ok) {
         const savedMessage = await response.json();
-        setMessages((prev) => [...prev, savedMessage]);
+        setMessages((prev) => [...prev, savedMessage.message]);
       } else {
         console.error('Failed to send message:', response.statusText);
       }
@@ -88,7 +88,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   };
 
   // Like a message
-  const handleLike = async (messageId: number) => {
+  const handleLike = async (messageId: string) => {
     try {
       const response = await fetch(`/api/messages/${messageId}/like`, {
         method: 'POST',
@@ -132,28 +132,23 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
               )}
               <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
                 <button
-                  className="hover:text-blue-400 transition-colors"
+                  className="flex items-center gap-1"
                   onClick={() => handleLike(message.id)}
                 >
-                  Like ({message.likes})
-                </button>
-                <button
-                  className="hover:text-blue-400 transition-colors"
-                  onClick={() => setReplyingTo(message.id)}
-                >
-                  Reply
+                  <span>{message.likes}</span> 👍
                 </button>
               </div>
             </div>
+
             {message.replies.length > 0 && (
-              <div className="pl-4 mt-2 border-l border-gray-700">
+              <div className="ml-6 mt-2">
                 {message.replies.map((reply) => (
-                  <div key={reply.id} className="mb-2 bg-gray-800 rounded-lg p-3">
+                  <div key={reply.id} className="bg-gray-700 p-2 rounded-lg mb-2">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-white">{reply.sender}</span>
                       <span className="text-xs text-gray-400">{reply.time}</span>
                     </div>
-                    <p className="text-gray-300 mt-1">{reply.text}</p>
+                    <p className="text-gray-300">{reply.text}</p>
                   </div>
                 ))}
               </div>
@@ -161,34 +156,22 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
           </div>
         ))}
       </div>
+
       {/* Message Input */}
-      <div className="p-4 border-t border-gray-700 bg-gray-800">
-        {replyingTo && (
-          <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-            <span>Replying to message</span>
-            <button
-              onClick={() => setReplyingTo(null)}
-              className="hover:text-blue-400 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-        <div className="flex items-center gap-2 relative">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={handleInputChange}
-            placeholder={replyingTo ? 'Type your reply...' : 'Type a message with @mentions or #tags'}
-            className="flex-1 px-4 py-2 bg-gray-700 text-white border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Send
-          </button>
-        </div>
+      <div className="p-4 bg-gray-800">
+        <input
+          type="text"
+          className="w-full p-2 bg-gray-700 text-white rounded-lg"
+          placeholder="Type a message..."
+          value={newMessage}
+          onChange={handleInputChange}
+        />
+        <button
+          className="mt-2 w-full bg-blue-500 text-white p-2 rounded-lg"
+          onClick={handleSendMessage}
+        >
+          Send
+        </button>
       </div>
     </div>
   );
