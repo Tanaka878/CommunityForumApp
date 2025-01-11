@@ -22,13 +22,12 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   const [newMessage, setNewMessage] = useState<string>('');
   const [, setReplyingTo] = useState<string | null>(null);
 
-  
   // Fetch messages from the server when the component mounts
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         const response = await fetch(
-          `/api/messages?communityId=${communityId}&userId=${userId}`
+          `/api/message?communityId=${communityId}&userId=${userId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -68,7 +67,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
     };
 
     try {
-      const response = await fetch('/api/messages', {
+      const response = await fetch('/api/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMsg),
@@ -91,7 +90,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   // Like a message
   const handleLike = async (messageId: string) => {
     try {
-      const response = await fetch(`/api/messages/${messageId}/like`, {
+      const response = await fetch(`/api/message/${messageId}/like`, {
         method: 'POST',
       });
 
@@ -141,7 +140,7 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
               </div>
             </div>
 
-            {message.replies.length > 0 && (
+            {message.replies && message.replies.length > 0 && (
               <div className="ml-6 mt-2">
                 {message.replies.map((reply) => (
                   <div key={reply.id} className="bg-gray-700 p-2 rounded-lg mb-2">
