@@ -1,17 +1,11 @@
 import { NextResponse } from "next/server";
-import ConnectMongo from "../../libs/mongodb"; // Adjust path as needed
-//import Message from "../../Model/Message"; // Adjust path as needed
+import ConnectMongo from "../../libs/mongodb";
 import Message from "../../components/Model/Message";
-
-
-
 
 // GET: Fetch messages for a community
 export async function GET(request) {
-
   const { searchParams } = new URL(request.url);
   const communityId = searchParams.get("communityId");
-  console.log("Getting messages");
 
   if (!communityId) {
     return NextResponse.json(
@@ -21,18 +15,14 @@ export async function GET(request) {
   }
 
   try {
-    console.log("Connecting to MongoDB...");
     await ConnectMongo();
-    console.log("Connected to MongoDB!");
-
     const messages = await Message.find({ communityId })
-      .populate("replies") // Fetch nested replies
-      .sort({ time: 1 })  // Sort by time (oldest to newest)
-      .lean(); // Return plain objects for better performance
+      .populate("replies")
+      .sort({ time: 1 })
+      .lean();
 
-    // Map the messages to include the id field for consistency
     const formattedMessages = messages.map((msg) => ({
-      id: msg._id.toString(), // MongoDB _id to id
+      id: msg._id.toString(),
       sender: msg.sender,
       text: msg.text,
       time: msg.time.toISOString(),
@@ -47,7 +37,6 @@ export async function GET(request) {
       tags: msg.tags,
     }));
 
-    console.log("Messages fetched:", formattedMessages);
     return NextResponse.json(formattedMessages, { status: 200 });
   } catch (error) {
     console.error("Error fetching messages:", error);
@@ -67,24 +56,17 @@ export async function POST(request) {
       );
     }
 
-    console.log("Connecting to MongoDB...");
     await ConnectMongo();
-    console.log("Connected to MongoDB!");
-
-    // Create a new message
     const message = await Message.create({
       sender,
       text,
       communityId,
       mentions,
       tags,
-      time: new Date(), // Ensure time is correctly set
+      time: new Date(),
       createdAt: new Date(),
     });
 
-    console.log("Message created:", message);
-
-    // Return the newly created message with the id
     return NextResponse.json({
       message: "Message sent",
       data: {
@@ -100,38 +82,6 @@ export async function POST(request) {
     }, { status: 201 });
   } catch (error) {
     console.error("Error sending message:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-// POST_LIKE: Like a message (fixed to handle request correctly)
-export async function POST_LIKE(request) {
-  const { id } = await request.json(); // Expecting JSON with message ID
-
-  if (!id) {
-    return NextResponse.json({ error: "Message ID is required" }, { status: 400 });
-  }
-
-  try {
-    console.log("Connecting to MongoDB...");
-    await ConnectMongo();
-    console.log("Connected to MongoDB!");
-
-    const message = await Message.findByIdAndUpdate(
-      id,
-      { $inc: { likes: 1 } }, // Increment likes count
-      { new: true }
-    );
-
-    if (!message) {
-      return NextResponse.json({ error: "Message not found" }, { status: 404 });
-    }
-
-    console.log("Message liked:", message);
-
-    return NextResponse.json({ message }, { status: 200 });
-  } catch (error) {
-    console.error("Error liking message:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
