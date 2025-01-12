@@ -30,7 +30,7 @@ export async function GET(request) {
       replies: msg.replies.map((reply) => ({
         id: reply._id.toString(),
         sender: reply.sender,
-        text: reply.text,
+        text: reply.text, // Full reply text
         time: reply.time.toISOString(),
       })),
       mentions: msg.mentions,
@@ -44,10 +44,11 @@ export async function GET(request) {
   }
 }
 
-// POST: Create a new message
+// POST: Create a new message or a reply
 export async function POST(request) {
   try {
-    const { sender, text, communityId, mentions, tags } = await request.json();
+    const { sender, text, communityId, mentions, tags, parentMessageId } =
+      await request.json();
 
     if (!sender || !text || !communityId) {
       return NextResponse.json(
@@ -57,6 +58,20 @@ export async function POST(request) {
     }
 
     await ConnectMongo();
+
+    // Check if this is a reply
+    let parentMessage = null;
+    if (parentMessageId) {
+      parentMessage = await Message.findById(parentMessageId);
+      if (!parentMessage) {
+        return NextResponse.json(
+          { error: "Parent message not found" },
+          { status: 404 }
+        );
+      }
+    }
+
+    // Create the new message or reply
     const message = await Message.create({
       sender,
       text,
@@ -67,19 +82,33 @@ export async function POST(request) {
       createdAt: new Date(),
     });
 
-    return NextResponse.json({
-      message: "Message sent",
-      data: {
-        id: message._id.toString(),
-        sender: message.sender,
-        text: message.text,
-        time: message.time.toISOString(),
-        likes: message.likes,
-        replies: [],
-        mentions: message.mentions,
-        tags: message.tags,
+    if (parentMessage) {
+      parentMessage.replies.push(message._id); // Add reply ID to parent message
+      await parentMessage.save();
+    }
+
+    return NextResponse.json(
+      {
+        message: "Message sent",
+        data: {
+          id: message._id.toString(),
+          sender: message.sender,
+          text: message.text,
+          time: message.time.toISOString(),
+          likes: message.likes,
+          replies: [],
+          mentions: message.mentions,
+          tags: message.tags,
+          parentMessage: parentMessage
+            ? {
+                id: parentMessage._id.toString(),
+                text: parentMessage.text,
+              }
+            : null,
+        },
       },
-    }, { status: 201 });
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error sending message:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
