@@ -1,166 +1,126 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from "react";
 
-type Message = {
+interface Message {
   id: string;
   sender: string;
   text: string;
   time: string;
   likes: number;
   replies: Message[];
-  mentions?: string[];
-  tags?: string[];
-};
+}
 
-type Props = {
-  userId: string;
-  communityId: string;
-};
-
-const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
+const Post: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState<string>('');
-  const [, setReplyingTo] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
-  // Fetch messages from the server when the component mounts
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch(
-          `/api/message?communityId=${communityId}&userId=${userId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setMessages(data);
-        } else {
-          console.error('Failed to fetch messages:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    };
-
-    fetchMessages();
-  }, [communityId, userId]);
-
-  // Handle input change
+  // Handle message input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
   };
 
-  // Send a new message
-  const handleSendMessage = async () => {
+  // Handle sending a message
+  const handleSendMessage = () => {
     if (!newMessage.trim()) return;
 
-    const mentions = newMessage.match(/@\w+/g)?.map((mention) => mention.slice(1)) || [];
-    const tags = newMessage.match(/#\w+/g)?.map((tag) => tag.slice(1)) || [];
-
-    const newMsg = {
-      sender: userId,
+    const newMessageObject: Message = {
+      id: Math.random().toString(36).substring(2),
+      sender: "You",
       text: newMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: new Date().toISOString(),
       likes: 0,
       replies: [],
-      mentions,
-      tags,
-      communityId,
     };
 
-    try {
-      const response = await fetch('/api/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMsg),
-      });
-
-      if (response.ok) {
-        const savedMessage = await response.json();
-        setMessages((prev) => [...prev, savedMessage.message]);
-      } else {
-        console.error('Failed to send message:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
+    if (replyingTo) {
+      // Add the new message as a reply
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === replyingTo.id
+            ? { ...msg, replies: [...msg.replies, newMessageObject] }
+            : msg
+        )
+      );
+      setReplyingTo(null); // Clear the reply state
+    } else {
+      // Add the new message as a top-level message
+      setMessages((prev) => [...prev, newMessageObject]);
     }
 
-    setNewMessage('');
-    setReplyingTo(null);
+    setNewMessage("");
   };
 
-  // Like a message
-  const handleLike = async (messageId: string) => {
-    try {
-      const response = await fetch(`/api/message/${messageId}/like`, {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        setMessages((prev) =>
-          prev.map((message) =>
-            message.id === messageId ? { ...message, likes: message.likes + 1 } : message
-          )
-        );
-      } else {
-        console.error('Failed to like message:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error liking message:', error);
-    }
+  // Handle liking a message
+  const handleLike = (messageId: string) => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId ? { ...msg, likes: msg.likes + 1 } : msg
+      )
+    );
   };
 
-  // Recursive function to render messages and replies
-  const renderMessages = (messages: Message[], level: number = 0) => {
-    return messages.map((message, index) => (
-      <div key={message.id || index} style={{ marginLeft: `${level * 20}px` }}>
-        {/* Display the message content */}
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">{message.sender}</span>
-            <span className="text-xs text-gray-400">{message.time}</span>
-          </div>
-          <p className="text-gray-300 mt-1">{message.text}</p>
-          {message.mentions && message.mentions.length > 0 && (
-            <div className="text-sm text-purple-400 mt-1">
-              Mentions: {message.mentions.join(', ')}
-            </div>
-          )}
-          {message.tags && message.tags.length > 0 && (
-            <div className="text-sm text-blue-400 mt-1">
-              Tags: {message.tags.join(', ')}
-            </div>
-          )}
-          <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
-            <button
-              className="flex items-center gap-1"
-              onClick={() => handleLike(message.id)}
-            >
-              <span>{message.likes}</span> 👍
-            </button>
-          </div>
-        </div>
-
-        {/* Check if replies exist and is an array before rendering */}
-        {Array.isArray(message.replies) && message.replies.length > 0 && (
-          <div className="mt-4">{renderMessages(message.replies, level + 1)}</div>
-        )}
-      </div>
-    ));
+  // Handle replying to a message
+  const handleReply = (message: Message) => {
+    setReplyingTo(message);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900">
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-900">
+    <div className="h-screen flex flex-col bg-gray-900 p-4">
+      {/* Message List */}
+      <div className="flex-1 overflow-y-auto">
         {messages.map((message) => (
-          <div key={message.id} className="mb-4">
-            {renderMessages([message])}
+          <div key={message.id} className="bg-gray-800 p-4 rounded-lg mb-4">
+            <p className="text-white">{message.text}</p>
+            <p className="text-sm text-gray-400">— {message.sender}</p>
+            <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
+              <button
+                className="flex items-center gap-1"
+                onClick={() => handleLike(message.id)}
+              >
+                <span>{message.likes}</span> 👍
+              </button>
+              <button
+                className="flex items-center gap-1"
+                onClick={() => handleReply(message)}
+              >
+                Reply
+              </button>
+            </div>
+            {/* Replies */}
+            {message.replies.length > 0 && (
+              <div className="mt-4 pl-4 border-l-2 border-gray-600">
+                {message.replies.map((reply) => (
+                  <div key={reply.id} className="mb-2">
+                    <p className="text-gray-300">{reply.text}</p>
+                    <p className="text-sm text-gray-500">
+                      — {reply.sender} ({new Date(reply.time).toLocaleString()})
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       {/* Message Input */}
-      <div className="p-4 bg-gray-800">
+      <div className="bg-gray-800 p-4 rounded-lg">
+        {replyingTo && (
+          <div className="bg-gray-700 text-white p-2 rounded-lg mb-2">
+            <p className="text-sm">
+              Replying to <strong>{replyingTo.sender}</strong>:{" "}
+              {replyingTo.text}
+            </p>
+            <button
+              className="text-red-500 text-sm mt-1"
+              onClick={() => setReplyingTo(null)}
+            >
+              Cancel Reply
+            </button>
+          </div>
+        )}
         <input
           type="text"
           className="w-full p-2 bg-gray-700 text-white rounded-lg"
@@ -179,4 +139,4 @@ const ChatArea: React.FC<Props> = ({ userId, communityId }) => {
   );
 };
 
-export default ChatArea;
+export default Post;
