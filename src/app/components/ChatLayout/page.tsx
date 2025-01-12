@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ChatArea from '../ChatData/Post';
 import ChatNavBar from '../ChatNavBar/ChatNavBar';
@@ -13,29 +13,48 @@ const ChatLayoutContent = () => {
   const description = searchParams.get("description") || "No description available.";
   const groupName = searchParams.get("groupName") || "Unnamed Group";
 
-  if (!id || !groupName || !description) {
-    return <div>Error: Missing required data.</div>;
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Effect to access localStorage on the client side
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("id");
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+    setLoading(false); // Set loading to false after checking localStorage
+  }, []);
+
+  // Display loading indicator while fetching the userId
+  if (loading) {
+    return <div>Loading...</div>;
   }
-   const handleJoinGroup = async (groupId: number) => {
+
+  // If userId is not found, you could show a message or handle the case accordingly
+  if (!userId) {
+    return <div>Error: No user ID found in localStorage.</div>;
+  }
+
+  const handleJoinGroup = async (groupId: number) => {
     const email = localStorage.getItem("email");
-  
+
     if (!email) {
       console.error("Email not found in localStorage.");
       return;
     }
-  
+
     try {
       console.log(`Attempting to join group with ID: ${groupId} using email: ${email}`);
-      
+
       const response = await fetch(`${BASE_URL}/api/communities/join/${email}/${groupId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (response.ok) {
-        const data = await response.json(); 
+        const data = await response.json();
         console.log(`Successfully joined group with ID: ${groupId}`, data);
       } else if (response.status === 404) {
         console.error("User not found. Unable to join group.");
@@ -46,15 +65,12 @@ const ChatLayoutContent = () => {
       console.error("An error occurred while attempting to join the group:", error);
     }
   };
-  
-
 
   return (
     <div className="flex flex-col h-screen py-5">
       {/* Navigation Bar */}
       <ChatNavBar
-      
-       onJoin={handleJoinGroup}
+        onJoin={handleJoinGroup}
         groupName={groupName}
         description={description}
         image={'/Images/music-lover.webp'}
@@ -64,7 +80,7 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea userId={`${localStorage.getItem("id")}`} communityId={`${id}`} />
+        <ChatArea userId={userId} communityId={id} />
       </div>
     </div>
   );
