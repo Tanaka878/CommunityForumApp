@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader } from "lucide-react";
+import { Loader, MessageSquare, ThumbsUp } from "lucide-react";
 
 interface Message {
   id: string;
@@ -8,6 +8,7 @@ interface Message {
   time: string;
   likes: number;
   replies: Message[];
+  parentId?: string;
 }
 
 interface MessageItemProps {
@@ -27,14 +28,20 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const hasReplies = message.replies && message.replies.length > 0;
   const maxDepth = 5;
 
+  const replyCount = message.replies?.length || 0;
+  const nestedReplyCount = message.replies?.reduce((count, reply) => 
+    count + (reply.replies?.length || 0), 0
+  );
+
   if (depth >= maxDepth) {
     return (
       <div key={`thread-${message.id}`} className="mt-2 pl-4">
         <button 
-          className="text-blue-400 text-sm"
+          className="text-blue-400 text-sm hover:underline flex items-center gap-2"
           onClick={() => window.open(`/thread/${message.id}`, '_blank')}
         >
-          Continue this thread →
+          <MessageSquare size={14} />
+          View full thread ({replyCount + nestedReplyCount} replies)
         </button>
       </div>
     );
@@ -51,7 +58,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
         </div>
         {hasReplies && (
           <button
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white px-2"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? '−' : '+'}
@@ -64,14 +71,15 @@ const MessageItem: React.FC<MessageItemProps> = ({
           className="flex items-center gap-1 text-gray-400 hover:text-blue-400 transition-colors"
           onClick={() => onLike(message.id)}
         >
-          <span>👍</span>
+          <ThumbsUp size={14} />
           <span>{message.likes}</span>
         </button>
         <button
-          className="text-gray-400 hover:text-blue-400 transition-colors"
+          className="flex items-center gap-1 text-gray-400 hover:text-blue-400 transition-colors"
           onClick={() => onReply(message)}
         >
-          Reply
+          <MessageSquare size={14} />
+          <span>Reply {hasReplies && `(${replyCount})`}</span>
         </button>
       </div>
 
@@ -119,28 +127,6 @@ const Post: React.FC = () => {
     }
   };
 
-  const updateMessageTree = (
-    messages: Message[],
-    parentId: string,
-    newReply: Message
-  ): Message[] => {
-    return messages.map((message) => {
-      if (message.id === parentId) {
-        return {
-          ...message,
-          replies: [...(message.replies || []), newReply],
-        };
-      }
-      if (message.replies && message.replies.length > 0) {
-        return {
-          ...message,
-          replies: updateMessageTree(message.replies, parentId, newReply),
-        };
-      }
-      return message;
-    });
-  };
-
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -165,12 +151,14 @@ const Post: React.FC = () => {
 
       const newMsg = await response.json();
 
-      setMessages((prev) => {
-        if (replyingTo) {
-          return updateMessageTree(prev, replyingTo.id, newMsg);
-        }
-        return [...prev, newMsg];
-      });
+      if (replyingTo) {
+        // Update the messages tree with the new reply
+        setMessages(prevMessages => 
+          updateMessageTreeWithReply(prevMessages, replyingTo.id, newMsg)
+        );
+      } else {
+        setMessages(prev => [...prev, newMsg]);
+      }
 
       setNewMessage("");
       setReplyingTo(null);
@@ -182,31 +170,56 @@ const Post: React.FC = () => {
     }
   };
 
+  const updateMessageTreeWithReply = (messages: Message[], parentId: string, newReply: Message): Message[] => {
+    return messages.map(message => {
+      if (message.id === parentId) {
+        return {
+          ...message,
+          replies: [...(message.replies || []), newReply]
+        };
+      }
+      if (message.replies?.length) {
+        return {
+          ...message,
+          replies: updateMessageTreeWithReply(message.replies, parentId, newReply)
+        };
+      }
+      return message;
+    });
+  };
+
   const handleLike = async (messageId: string) => {
     try {
-      const response = await fetch(`/api/message/${messageId}/like`, {
-        method: "POST",
+      const response = await fetch("/api/message", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId }),
       });
 
       if (!response.ok) throw new Error("Failed to like message");
 
-      setMessages((prev) => {
-        const updateLikes = (messages: Message[]): Message[] => {
-          return messages.map((msg) => {
-            if (msg.id === messageId) {
-              return { ...msg, likes: msg.likes + 1 };
-            }
-            if (msg.replies && msg.replies.length > 0) {
-              return { ...msg, replies: updateLikes(msg.replies) };
-            }
-            return msg;
-          });
-        };
-        return updateLikes(prev);
-      });
+      const updatedMessage = await response.json();
+      setMessages(prev => 
+        updateMessageTreeWithLike(prev, messageId, updatedMessage.likes)
+      );
     } catch (error) {
       console.error("Error liking message:", error);
     }
+  };
+
+  const updateMessageTreeWithLike = (messages: Message[], messageId: string, newLikeCount: number): Message[] => {
+    return messages.map(message => {
+      if (message.id === messageId) {
+        return { ...message, likes: newLikeCount };
+      }
+      if (message.replies?.length) {
+        return {
+          ...message,
+          replies: updateMessageTreeWithLike(message.replies, messageId, newLikeCount)
+        };
+      }
+      return message;
+    });
   };
 
   return (
@@ -262,7 +275,7 @@ const Post: React.FC = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             disabled={loading}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
           />
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
