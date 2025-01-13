@@ -90,6 +90,7 @@ const HomePage = () => {
   }, []);
 
   const handleSettings = () => {
+    router.push('/components/Settings/HomePage')
     console.log("Settings clicked");
   };
 
