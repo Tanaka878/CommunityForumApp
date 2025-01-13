@@ -1,6 +1,5 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Loader } from "lucide-react";
 
 interface Message {
   id: string;
@@ -11,129 +10,272 @@ interface Message {
   replies: Message[];
 }
 
+interface MessageItemProps {
+  message: Message;
+  onLike: (messageId: string) => Promise<void>;
+  onReply: (message: Message) => void;
+  depth?: number;
+}
+
+const MessageItem: React.FC<MessageItemProps> = ({ 
+  message, 
+  onLike, 
+  onReply, 
+  depth = 0 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const hasReplies = message.replies && message.replies.length > 0;
+  const maxDepth = 5;
+
+  if (depth >= maxDepth) {
+    return (
+      <div key={`thread-${message.id}`} className="mt-2 pl-4">
+        <button 
+          className="text-blue-400 text-sm"
+          onClick={() => window.open(`/thread/${message.id}`, '_blank')}
+        >
+          Continue this thread →
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div key={`message-${message.id}`} className="bg-gray-800 p-4 rounded-lg mb-4">
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          <p className="text-white break-words">{message.text}</p>
+          <p className="text-sm text-gray-400 mt-1">
+            {message.sender} • {new Date(message.time).toLocaleString()}
+          </p>
+        </div>
+        {hasReplies && (
+          <button
+            className="text-gray-400 hover:text-white"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? '−' : '+'}
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4 mt-3 text-sm">
+        <button
+          className="flex items-center gap-1 text-gray-400 hover:text-blue-400 transition-colors"
+          onClick={() => onLike(message.id)}
+        >
+          <span>👍</span>
+          <span>{message.likes}</span>
+        </button>
+        <button
+          className="text-gray-400 hover:text-blue-400 transition-colors"
+          onClick={() => onReply(message)}
+        >
+          Reply
+        </button>
+      </div>
+
+      {hasReplies && isExpanded && (
+        <div className="mt-4 pl-4 border-l-2 border-gray-700">
+          {message.replies.map((reply) => (
+            <MessageItem
+              key={`reply-${reply.id}-depth-${depth}`}
+              message={reply}
+              onLike={onLike}
+              onReply={onReply}
+              depth={depth + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Post: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const communityId = "123";
 
-  // Handle message input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMessage(e.target.value);
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/message?communityId=${communityId}`);
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      setError("Failed to load messages. Please try again later.");
+      console.error("Error fetching messages:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle sending a message
-  const handleSendMessage = () => {
+  const updateMessageTree = (
+    messages: Message[],
+    parentId: string,
+    newReply: Message
+  ): Message[] => {
+    return messages.map((message) => {
+      if (message.id === parentId) {
+        return {
+          ...message,
+          replies: [...(message.replies || []), newReply],
+        };
+      }
+      if (message.replies && message.replies.length > 0) {
+        return {
+          ...message,
+          replies: updateMessageTree(message.replies, parentId, newReply),
+        };
+      }
+      return message;
+    });
+  };
+
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const newMessageObject: Message = {
-      id: Math.random().toString(36).substring(2),
-      sender: "You",
-      text: newMessage,
-      time: new Date().toISOString(),
-      likes: 0,
-      replies: [],
-    };
+    try {
+      setLoading(true);
+      setError(null);
 
-    if (replyingTo) {
-      // Add the new message as a reply
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === replyingTo.id
-            ? { ...msg, replies: [...msg.replies, newMessageObject] }
-            : msg
-        )
-      );
-      setReplyingTo(null); // Clear the reply state
-    } else {
-      // Add the new message as a top-level message
-      setMessages((prev) => [...prev, newMessageObject]);
+      const payload = {
+        sender: "You",
+        text: newMessage,
+        communityId,
+        ...(replyingTo && { replyTo: replyingTo.id }),
+      };
+
+      const response = await fetch("/api/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error("Failed to send message");
+
+      const newMsg = await response.json();
+
+      setMessages((prev) => {
+        if (replyingTo) {
+          return updateMessageTree(prev, replyingTo.id, newMsg);
+        }
+        return [...prev, newMsg];
+      });
+
+      setNewMessage("");
+      setReplyingTo(null);
+    } catch (error) {
+      setError("Failed to send message. Please try again.");
+      console.error("Error sending message:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setNewMessage("");
   };
 
-  // Handle liking a message
-  const handleLike = (messageId: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, likes: msg.likes + 1 } : msg
-      )
-    );
-  };
+  const handleLike = async (messageId: string) => {
+    try {
+      const response = await fetch(`/api/message/${messageId}/like`, {
+        method: "POST",
+      });
 
-  // Handle replying to a message
-  const handleReply = (message: Message) => {
-    setReplyingTo(message);
+      if (!response.ok) throw new Error("Failed to like message");
+
+      setMessages((prev) => {
+        const updateLikes = (messages: Message[]): Message[] => {
+          return messages.map((msg) => {
+            if (msg.id === messageId) {
+              return { ...msg, likes: msg.likes + 1 };
+            }
+            if (msg.replies && msg.replies.length > 0) {
+              return { ...msg, replies: updateLikes(msg.replies) };
+            }
+            return msg;
+          });
+        };
+        return updateLikes(prev);
+      });
+    } catch (error) {
+      console.error("Error liking message:", error);
+    }
   };
 
   return (
     <div className="h-screen flex flex-col bg-gray-900 p-4">
-      {/* Message List */}
-      <div className="flex-1 overflow-y-auto">
-        {messages.map((message) => (
-          <div key={message.id} className="bg-gray-800 p-4 rounded-lg mb-4">
-            <p className="text-white">{message.text}</p>
-            <p className="text-sm text-gray-400">— {message.sender}</p>
-            <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
-              <button
-                className="flex items-center gap-1"
-                onClick={() => handleLike(message.id)}
-              >
-                <span>{message.likes}</span> 👍
-              </button>
-              <button
-                className="flex items-center gap-1"
-                onClick={() => handleReply(message)}
-              >
-                Reply
-              </button>
-            </div>
-            {/* Replies */}
-            {message.replies.length > 0 && (
-              <div className="mt-4 pl-4 border-l-2 border-gray-600">
-                {message.replies.map((reply) => (
-                  <div key={reply.id} className="mb-2">
-                    <p className="text-gray-300">{reply.text}</p>
-                    <p className="text-sm text-gray-500">
-                      — {reply.sender} ({new Date(reply.time).toLocaleString()})
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+      {error && (
+        <div className="bg-red-500 text-white p-3 rounded-lg mb-4">
+          {error}
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto space-y-4">
+        {loading && messages.length === 0 ? (
+          <div className="flex justify-center items-center h-full">
+            <Loader className="animate-spin text-gray-400" />
           </div>
-        ))}
+        ) : (
+          messages.map((message) => (
+            <MessageItem
+              key={`root-${message.id}`}
+              message={message}
+              onLike={handleLike}
+              onReply={setReplyingTo}
+            />
+          ))
+        )}
       </div>
 
-      {/* Message Input */}
-      <div className="bg-gray-800 p-4 rounded-lg">
+      <div className="bg-gray-800 p-4 rounded-lg mt-4">
         {replyingTo && (
-          <div className="bg-gray-700 text-white p-2 rounded-lg mb-2">
-            <p className="text-sm">
-              Replying to <strong>{replyingTo.sender}</strong>:{" "}
-              {replyingTo.text}
-            </p>
-            <button
-              className="text-red-500 text-sm mt-1"
-              onClick={() => setReplyingTo(null)}
-            >
-              Cancel Reply
-            </button>
+          <div className="bg-gray-700 p-3 rounded-lg mb-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-gray-400">
+                  Replying to <span className="text-white">{replyingTo.sender}</span>
+                </p>
+                <p className="text-sm text-gray-300 mt-1">{replyingTo.text}</p>
+              </div>
+              <button
+                className="text-gray-400 hover:text-red-400"
+                onClick={() => setReplyingTo(null)}
+              >
+                ×
+              </button>
+            </div>
           </div>
         )}
-        <input
-          type="text"
-          className="w-full p-2 bg-gray-700 text-white rounded-lg"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={handleInputChange}
-        />
-        <button
-          className="mt-2 w-full bg-blue-500 text-white p-2 rounded-lg"
-          onClick={handleSendMessage}
-        >
-          Send
-        </button>
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            className="flex-1 p-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            placeholder="Type a message..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            disabled={loading}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+          />
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
+            onClick={handleSendMessage}
+            disabled={loading || !newMessage.trim()}
+          >
+            {loading ? (
+              <Loader className="animate-spin w-5 h-5" />
+            ) : (
+              'Send'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
