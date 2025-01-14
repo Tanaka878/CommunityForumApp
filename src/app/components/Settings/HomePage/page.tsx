@@ -1,19 +1,48 @@
-import React from 'react'
-import { ArrowRight } from 'lucide-react'
+'use client'
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Settings = () => {
-  return (
-    <div className='p-7 items-center'>
-      <h1 className='items-center font-bold text-5xl '>Settings</h1>
-      <nav className='justify-between flex'>
-        <h2 className='font-extrabold text-2xl'>Profile</h2>
-        <ArrowRight className='font-extrabold text-xl'/>
-      </nav>
-      
-        
-      
-    </div>
-  )
-}
+  const router = useRouter();
 
-export default Settings
+  function Privacy(){
+    console.log('privacy tab clicked')
+  }
+   
+  function Profile(){
+    console.log('profile tab clicked')
+  }
+
+  function AboutDev(){
+    router.push('/components/Settings/AboutDev')
+
+
+  }
+  return (
+    <div className="p-7">
+      <h1 className="text-center font-bold text-5xl text-black mb-6">Settings</h1>
+      <nav className="space-y-4">
+        {/* Profile Tab */}
+        <div className="flex justify-between items-center border p-4 rounded-lg hover:bg-gray-100 transition duration-300">
+          <h2 className="font-extrabold text-3xl" onClick={Profile}>Profile</h2>
+          <ArrowRight className="text-black w-6 h-6 transition-transform duration-300 hover:translate-x-1" />
+        </div>
+
+        {/* Privacy Tab */}
+        <div className="flex justify-between items-center border p-4 rounded-lg hover:bg-gray-100 transition duration-300" onClick={Privacy}>
+          <h2 className="font-extrabold text-3xl">Privacy</h2>
+          <ArrowRight className="text-black w-6 h-6 transition-transform duration-300 hover:translate-x-1" />
+        </div>
+
+        {/* About Developer Tab */}
+        <div className="flex justify-between items-center border p-4 rounded-lg hover:bg-gray-100 transition duration-300">
+          <h2 className="font-extrabold text-3xl" onClick={AboutDev}>About Developer</h2>
+          <ArrowRight className="text-black w-6 h-6 transition-transform duration-300 hover:translate-x-1" />
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Settings;
