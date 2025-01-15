@@ -7,7 +7,7 @@ const Settings = () => {
   const router = useRouter();
 
   function Privacy(){
-    console.log('privacy tab clicked')
+    router.push('/components/Settings/Privacy')
   }
    
   function Profile(){
