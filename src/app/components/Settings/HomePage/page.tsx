@@ -24,7 +24,7 @@ const Settings = () => {
   }
 
   function AboutApp(){
-    router.push('');
+    router.push('/components/Settings/AboutApp');
   }
 
   return (
