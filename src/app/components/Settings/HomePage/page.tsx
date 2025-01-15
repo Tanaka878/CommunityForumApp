@@ -20,8 +20,8 @@ const Settings = () => {
 
   }
   return (
-    <div className="p-7">
-      <h1 className="text-center font-bold text-5xl text-black mb-6">Settings</h1>
+    <div className="p-7 bg-gray-500 h-full">
+      <h1 className="text-center font-bold text-5xl text-black mb-6 p-11">Settings</h1>
       <nav className="space-y-4">
         {/* Profile Tab */}
         <div className="flex justify-between items-center border p-4 rounded-lg hover:bg-gray-100 transition duration-300">
