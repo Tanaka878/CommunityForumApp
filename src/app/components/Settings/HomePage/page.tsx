@@ -2,9 +2,14 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const Settings = () => {
   const router = useRouter();
+      function NavigateBack(): void {
+          router.push('/components/GroupsContainer/Container')
+      }
+  
 
   function Privacy(){
     router.push('/components/Settings/Privacy');
@@ -50,6 +55,14 @@ const Settings = () => {
           <ArrowRight className="text-gray-600 w-6 h-6 transition-transform duration-300 hover:translate-x-2" />
         </div>
       </nav>
+
+      <nav className="flex justify-center items-center h-20 p-4 bg-gray-100 shadow-md">
+            <button
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-slate-50 rounded-lg hover:bg-gray-800 transition-all" onClick={NavigateBack}>
+                <FaArrowLeft className="w-6 h-6 text-slate-50" />
+                Back
+            </button>
+        </nav>
     </div>
   );
 };
