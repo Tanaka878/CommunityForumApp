@@ -4,12 +4,8 @@ import { ArrowRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
 
-interface UserId{
-  id: number;
 
-}
-
-const Settings: React.FC<UserId> = () => {
+const Settings: React.FC = () => {
 
   const searchParams = useSearchParams();
   const router = useRouter();
