@@ -12,6 +12,11 @@ interface Message {
 }
 
 
+interface ChatAreaProps {
+  userId: string;
+  communityId: string;
+}
+
 
 interface MessageItemProps {
   message: Message;
@@ -102,7 +107,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   );
 };
 
-const Post: React.FC = () => {
+const Post: React.FC<ChatAreaProps> = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
