@@ -1,10 +1,17 @@
 'use client'
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
 
-const Settings = () => {
+interface UserId{
+  id: number;
+
+}
+
+const Settings: React.FC<UserId> = () => {
+
+  const searchParams = useSearchParams();
   const router = useRouter();
       function NavigateBack(): void {
           router.push('/components/GroupsContainer/Container')
@@ -12,7 +19,8 @@ const Settings = () => {
   
 
   function Privacy(){
-    router.push('/components/Settings/Privacy');
+    const id = searchParams.get('id')
+    router.push(`/components/Settings/Privacy?id=${id}`);
   }
 
   function Profile(){

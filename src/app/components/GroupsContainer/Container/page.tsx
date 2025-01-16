@@ -74,7 +74,7 @@ const HomePage = () => {
 
   const fetchCommunities = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/communities/getAll`); // Replace with your actual backend URL
+      const response = await fetch(`${BASE_URL}/api/communities/getAll`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
@@ -90,8 +90,7 @@ const HomePage = () => {
   }, []);
 
   const handleSettings = () => {
-    router.push('/components/Settings/HomePage')
-    console.log("Settings clicked");
+    router.push(`/components/Settings/HomePage?id=${user?.id}`)
   };
 
   const handleSearch = (query: string) => {
