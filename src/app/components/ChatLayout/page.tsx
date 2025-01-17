@@ -14,30 +14,54 @@ const ChatLayoutContent = () => {
   const groupName = searchParams.get("groupName") || "Unnamed Group";
 
   const [userId, setUserId] = useState<string | null>(null);
+  const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Effect to access localStorage on the client side
+  // Effect to load userId from localStorage
   useEffect(() => {
     const storedUserId = localStorage.getItem("id");
     if (storedUserId) {
       setUserId(storedUserId);
+    } else {
+      console.error("No user ID found in localStorage.");
     }
-    setLoading(false); // Set loading to false after checking localStorage
+    setLoading(false);
   }, []);
 
-  // Display loading indicator while fetching the userId
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // Effect to fetch nickname when userId is available
+  useEffect(() => {
+    if (userId) {
+      const fetchNickname = async () => {
+        const storedNickname = localStorage.getItem('nickname');
+        if (storedNickname) {
+          console.log("Nickname found in localStorage:", storedNickname);
+          setNickname(storedNickname);
+          return;
+        }
 
-  // If userId is not found, you could show a message or handle the case accordingly
-  if (!userId) {
-    return <div>Error: No user ID found in localStorage.</div>;
-  }
+        try {
+          const response = await fetch(`${BASE_URL}/api/communities/getNickname/${userId}`);
+          if (response.ok) {
+            const data = await response.json();
+            const fetchedNickname = data.nickname; // Adjust based on API response
+            setNickname(fetchedNickname);
+            localStorage.setItem('nickname', fetchedNickname);
+            console.log("Nickname fetched and saved:", fetchedNickname);
+          } else {
+            console.error("Failed to fetch nickname:", response.status, response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching nickname:", error);
+        }
+      };
 
+      fetchNickname();
+    }
+  }, [userId]);
+
+  // Function to join a group
   const handleJoinGroup = async (groupId: number) => {
     const email = localStorage.getItem("email");
-
     if (!email) {
       console.error("Email not found in localStorage.");
       return;
@@ -66,6 +90,11 @@ const ChatLayoutContent = () => {
     }
   };
 
+  // Show loading state while initializing
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col h-screen py-5">
       {/* Navigation Bar */}
@@ -80,7 +109,7 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea userId={userId} communityId={id} />
+        <ChatArea userId={userId!} communityId={id} username={nickname} nickname={nickname} />
       </div>
     </div>
   );

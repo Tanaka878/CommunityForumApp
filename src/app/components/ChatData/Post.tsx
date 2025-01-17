@@ -15,6 +15,8 @@ interface Message {
 interface ChatAreaProps {
   userId: string;
   communityId: string;
+  nickname: string;
+  username :string;
 }
 
 
@@ -107,12 +109,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
   );
 };
 
-const Post: React.FC<ChatAreaProps> = ({userId,communityId}) => {
+const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  console.log(userId)
  
 
   useEffect(() => {
@@ -142,7 +146,7 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId}) => {
       setError(null);
 
       const payload = {
-        sender: "You",
+        sender: nickname,
         text: newMessage,
         communityId,
         ...(replyingTo && { replyTo: replyingTo.id }),
