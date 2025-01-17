@@ -107,13 +107,13 @@ const MessageItem: React.FC<MessageItemProps> = ({
   );
 };
 
-const Post: React.FC<ChatAreaProps> = () => {
+const Post: React.FC<ChatAreaProps> = ({userId,communityId}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const communityId = "123";
+ 
 
   useEffect(() => {
     fetchMessages();
