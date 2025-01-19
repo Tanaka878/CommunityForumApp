@@ -14,7 +14,8 @@ import GroupList from "../../AllChats/page";
 interface User {
   email: string;
   localDate: string;
-  id:string
+  id:string;
+  nickname:string;
 
 }
 
@@ -63,7 +64,9 @@ const HomePage = () => {
         setUser(response.data);
         console.log("User data:", response.data.email);
         localStorage.setItem("id", response.data.id)
+        console.log('Nickname :' ,response.data.nickname)
         localStorage.getItem("id")
+        localStorage.setItem("nickname",response.data.nickname)
         console.log("The id : ",localStorage.getItem("id"))
       })
       .catch((error) => {

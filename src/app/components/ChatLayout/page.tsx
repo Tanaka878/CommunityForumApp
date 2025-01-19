@@ -28,25 +28,31 @@ const ChatLayoutContent = () => {
     setLoading(false);
   }, []);
 
-  // Effect to fetch nickname when userId is available
   useEffect(() => {
     if (userId) {
       const fetchNickname = async () => {
-        const storedNickname = localStorage.getItem('nickname');
-        if (storedNickname) {
-          console.log("Nickname found in localStorage:", storedNickname);
-          setNickname(storedNickname);
-          return;
-        }
-
         try {
+          // Check localStorage for an existing nickname
+          const storedNickname = localStorage.getItem('nickname');
+          if (storedNickname) {
+            console.log("Nickname found in localStorage:", storedNickname);
+            setNickname(storedNickname);
+            return;
+          }
+  
+          // Fetch nickname from the backend if not in localStorage
           const response = await fetch(`${BASE_URL}/api/communities/getNickname/${userId}`);
           if (response.ok) {
             const data = await response.json();
-            const fetchedNickname = data.nickname; // Adjust based on API response
+            console.log("API Response:", data);
+  
+            // Extract and store the fetched nickname
+            const fetchedNickname = data.nickname; // Assuming backend sends { "nickname": "..." }
             setNickname(fetchedNickname);
             localStorage.setItem('nickname', fetchedNickname);
-            console.log("Nickname fetched and saved:", fetchedNickname);
+          } else if (response.status === 404) {
+            console.error("User not found. Setting default nickname.");
+            setNickname("Guest");
           } else {
             console.error("Failed to fetch nickname:", response.status, response.statusText);
           }
@@ -54,10 +60,12 @@ const ChatLayoutContent = () => {
           console.error("Error fetching nickname:", error);
         }
       };
-
+  
+      // Call the async function
       fetchNickname();
     }
   }, [userId]);
+  
 
   // Function to join a group
   const handleJoinGroup = async (groupId: number) => {
