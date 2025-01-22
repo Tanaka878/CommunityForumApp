@@ -4,6 +4,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import BASE_URL from '@/app/config/api';
+import Image from 'next/image';
 
 
 const Login = () => {
@@ -66,6 +67,16 @@ const Login = () => {
 
   return (
     <div className="ml-auto mr-auto w-full max-w-sm p-4">
+
+<Image 
+  src={'/Images/logo.png'} 
+  alt={'Logo Image'} 
+  className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg object-contain rounded-full"
+  width={150}
+  height={150}
+/>
+
+
       <h1 className="text-3xl font-extrabold text-center slide-in opacity-0 translate-x-full">Login</h1>
 
       <form onSubmit={handleSubmit} className="mt-4">

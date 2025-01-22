@@ -38,7 +38,7 @@ const SignUp = () => {
     setError(''); // Clear previous errors
 
     // Check if nickname already exists
-    if (nicknames.includes(nickname)) {
+    if (nicknames.includes(nickname.trim())) {
       setError('Nickname already exists');
       return;
     }
