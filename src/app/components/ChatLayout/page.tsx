@@ -67,6 +67,17 @@ const ChatLayoutContent = () => {
   }, [userId]);
   
 
+  function pictureSelection(communityId: number): string {
+    switch (communityId) {
+      case 1:
+        return "/Images/music-lover.webp";
+      case 2:
+        return "/Images/food-lover.png";
+      default:
+        return "/Images/animal-lover.jpeg";
+    }
+  }
+
   // Function to join a group
   const handleJoinGroup = async (groupId: number) => {
     const email = localStorage.getItem("email");
@@ -110,7 +121,7 @@ const ChatLayoutContent = () => {
         onJoin={handleJoinGroup}
         groupName={groupName}
         description={description}
-        image={'/Images/music-lover.webp'}
+        image={pictureSelection(Number.parseInt(id))}
         groupId={parseInt(id, 10)}
         alt="Image"
       />

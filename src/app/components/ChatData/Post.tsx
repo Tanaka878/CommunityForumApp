@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loader, MessageSquare, ThumbsUp } from "lucide-react";
+import BASE_URL from "@/app/config/api";
 
 interface Message {
   id: string;
@@ -123,6 +124,32 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
     fetchMessages();
   }, []);
 
+  const isMemberOf = async () => {
+    const email = localStorage.getItem('email');
+  
+    try {
+      const response = await fetch(`${BASE_URL}/api/communities/isMember/${email}/${communityId}`);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const text = await response.text(); // Parse response as plain text
+      console.log('Raw response text:', text);
+  
+      const isMember = text.trim().toLowerCase() === 'true';
+      console.log('Is member:', isMember);
+    } catch (error) {
+      console.error('Error fetching membership status:', error);
+    }
+  };
+  
+  
+
+  useEffect(()=>{
+    isMemberOf()
+
+  })
   const fetchMessages = async () => {
     try {
       setLoading(true);

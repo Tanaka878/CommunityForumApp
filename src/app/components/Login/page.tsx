@@ -14,6 +14,11 @@ const Login = () => {
   const [token, setToken] = useState(''); // State to store the JWT token
   const router = useRouter();
 
+
+  function Privacy(){
+    console.log('privacy policy')
+  }
+
   useEffect(() => {
     const elements = document.querySelectorAll('.slide-in');
 
@@ -67,17 +72,15 @@ const Login = () => {
 
   return (
     <div className="ml-auto mr-auto w-full max-w-sm p-4">
+      <h1 className='flex justify-center text-center text-black font-extrabold sm:text-2xl animate-wave  te'>
+        <span className='text-red-600'>C</span>
+        <span>ommunity</span>
+        <span className='text-blue-500'>-F</span>
+        <span>orum</span>
+        
+        </h1>
 
-<Image 
-  src={'/Images/logo.png'} 
-  alt={'Logo Image'} 
-  className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg object-contain rounded-full"
-  width={150}
-  height={150}
-/>
-
-
-      <h1 className="text-3xl font-extrabold text-center slide-in opacity-0 translate-x-full">Login</h1>
+      <h2 className="text-3xl font-extrabold text-center slide-in opacity-0 translate-x-full">Login</h2>
 
       <form onSubmit={handleSubmit} className="mt-4">
         <div className="mb-4">
@@ -125,6 +128,8 @@ const Login = () => {
         >
           SignUp
         </button>
+
+        <footer className='text-blue-600 flex justify-center text-center text-sm' onClick={Privacy}>Privacy Policy</footer>
       </form>
 
       {token && (
