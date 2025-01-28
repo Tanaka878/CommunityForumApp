@@ -131,7 +131,7 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
       const response = await fetch(`${BASE_URL}/api/communities/isMember/${email}/${communityId}`);
   
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        console.log("User not part of the group")
       }
   
       const text = await response.text(); // Parse response as plain text

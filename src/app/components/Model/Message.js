@@ -9,7 +9,8 @@ const MessageSchema = new mongoose.Schema({
   mentions: [String],
   tags: [String],
   parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
-  replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }]
+  replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
+  readBy:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 });
 
 export default mongoose.models.Message || mongoose.model("Message", MessageSchema);
