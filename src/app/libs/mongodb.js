@@ -21,10 +21,7 @@ const ConnectMongo = async () => {
   if (!cached.promise) {
     console.log("Establishing new MongoDB connection");
     cached.promise = mongoose
-      .connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
+      .connect(uri) // Removed useNewUrlParser and useUnifiedTopology
       .then((mongoose) => {
         console.log("MongoDB connected successfully");
         return mongoose;
