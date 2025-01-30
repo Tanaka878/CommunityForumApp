@@ -10,7 +10,7 @@ const Profile = () => {
       <div className='flex justify-center text-center'>
 
         <div>
-          <Image src={''} alt={''} className='rounded-lg w-1/6'/>
+          <Image src={'/Image/'} alt={''} className='rounded-lg w-1/6'/>
         </div>
        
         <div className='grid-cols-1'>
