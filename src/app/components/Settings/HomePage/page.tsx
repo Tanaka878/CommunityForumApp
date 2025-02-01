@@ -24,7 +24,8 @@ const SettingsContent: React.FC = () => {
   };
 
   const Profile = () => {
-    router.push('/components/Settings/Profile');
+    
+    router.push(`/components/Settings/Profile/?id=${id}`);
     console.log('Profile tab clicked');
   };
 

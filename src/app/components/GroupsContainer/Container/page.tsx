@@ -71,7 +71,7 @@ const HomePage = () => {
       })
       .catch((error) => {
         console.error("Error:", error.response?.statusText || error.message);
-        router.push("/components/SignUp");
+        router.push("/components/Login");
       });
   }, [router]);
 
@@ -178,10 +178,10 @@ const HomePage = () => {
       </section>
 
       {/* Logout Button */}
-      <div className="sticky bottom-0 bg-white shadow p-4">
+      <div className="sticky bottom-0 bg-white shadow p-4 flex justify-center">
         <button
           onClick={handleLogout}
-          className="w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
+          className="w-1/3 px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
         >
           Logout
         </button>
