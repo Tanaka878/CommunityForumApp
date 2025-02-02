@@ -4,7 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import BASE_URL from '@/app/config/api';
 
+interface User{
+  nickname: string,
+  email: string,
+  numberOfGroups:string
+  dateJoined: string
+
+}
 const Profile = () => {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -12,6 +20,8 @@ const Profile = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const userIdRef = useRef<string | null>(null);
+  
+  const [userData, setUserData] = useState<User | null>(null)
 
   useEffect(() => {
     const storedId = localStorage.getItem('id');
@@ -85,6 +95,29 @@ const Profile = () => {
     router.push('/components/Settings/HomePage');
   };
 
+  //fectching the user data from the backend
+  const profileData = async()=>{
+
+    const response = await fetch(`${BASE_URL}/api/communities/getProfileData/${userIdRef.current}`);
+
+    if(response.ok){
+      const data = await response.json()
+      setUserData(data)
+
+      console.log("Nickkkk",userData);
+
+    }
+    else{
+      setError("Failed to fect Data")
+    }
+  }
+
+  useEffect(()=>{
+    profileData();
+  })
+
+  console.log(userData)
+
   return (
     <div className="text-black p-4 bg-white min-h-screen">
       <nav className="flex justify-center items-center mb-6">
@@ -127,9 +160,26 @@ const Profile = () => {
         {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       </div>
 
-      <div>
-        <h2><span>Tanaka Musungare</span></h2>
+      <div className='flex justify-center items-center'>
+        <h2>Nickname : </h2>
+        <h2><span>{userData?.nickname}</span></h2>
       </div>
+
+      <div className='flex justify-center items-center'>
+        <h2>Email : </h2>
+        <h2><span>{userData?.email}</span></h2>
+      </div>
+
+      <div className='flex justify-center items-center'>
+        <h2>Groups Joined : </h2>
+        <h2><span>{userData?.numberOfGroups}</span></h2>
+      </div>
+
+      <div className='flex justify-center items-center'>
+        <h2>Join Date : </h2>
+        <h2><span>{userData?.numberOfGroups}</span></h2>
+      </div>
+
 
       <nav className="mt-8 flex justify-center">
         <button
