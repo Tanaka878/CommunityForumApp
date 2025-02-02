@@ -9,7 +9,7 @@ import BASE_URL from '@/app/config/api';
 interface User{
   nickname: string,
   email: string,
-  numberOfGroups:string
+  numberOfGroups:string,
   dateJoined: string
 
 }
