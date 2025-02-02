@@ -12,7 +12,8 @@ function ChatNavBar({
   groupId,
   groupName,
   description,
-  onJoin
+  onJoin,
+  onExit,
 }: {
   image: string | StaticImageData;
   alt: string;
@@ -20,11 +21,13 @@ function ChatNavBar({
   groupName: string;
   description: string;
   onJoin?: (groupId: number) => void;
+  onExit? :(groupId :number) =>void;
 }) {
   const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisble] = useState(false)
 
   const handleNavigation = () => {
     console.log(description, groupId,loading,error);
@@ -108,6 +111,23 @@ function ChatNavBar({
     onJoin?.(groupId);
   };
 
+  //code to exit the group
+  function changeModal(){
+    console.log("Modal changed")
+    setIsModalVisble(true)
+  }
+ 
+  function handleCloseModal(): void {
+    setIsModalVisble(false)
+  }
+
+  function handleConfirmExit(): void {
+    console.log("User Exited the group")
+    onExit?.(groupId,)
+    setIsModalVisble(false)
+    
+  }
+
   return (
     <div className="flex items-center justify-between bg-gray-800 text-white p-2 h-16">
       <div className="flex items-center space-x-3 cursor-pointer" onClick={handleNavigation}>
@@ -155,13 +175,41 @@ function ChatNavBar({
         >
           <Phone size={24} />
         </button>
+
         <button
           className="p-2 hover:bg-gray-700 rounded-full"
           type="button"
           aria-label="More options"
+          onClick={changeModal}
         >
           <MoreVertical size={24} />
         </button>
+
+         {/* Modal */}
+      {isModalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg w-1/3 p-6 text-center">
+            <h2 className="text-xl font-semibold mb-4">Are you sure you want to exit?</h2>
+            <p className="text-gray-600 mb-6">Any unsaved changes will be lost.</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleConfirmExit}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+        {/** */}
       </div>
     </div>
   );

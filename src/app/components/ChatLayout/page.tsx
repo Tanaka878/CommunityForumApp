@@ -114,6 +114,14 @@ const ChatLayoutContent = () => {
     return <div>Loading...</div>;
   }
 
+  async function handleExit(groupId: number): Promise<void> {
+    
+
+    const response = await fetch(`${BASE_URL}/api/communities/exitGroup/${groupId}/${userId}`)
+    console.log(response)
+    console.log(" Exiing group with this id",groupId)
+  }
+
   return (
     <div className="flex flex-col h-screen py-5">
       {/* Navigation Bar */}
@@ -124,6 +132,7 @@ const ChatLayoutContent = () => {
         image={pictureSelection(Number.parseInt(id))}
         groupId={parseInt(id, 10)}
         alt="Image"
+        onExit={handleExit}
       />
 
       {/* Chat Area */}

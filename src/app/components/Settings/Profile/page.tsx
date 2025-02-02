@@ -1,4 +1,3 @@
-// Client-side React Component
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -6,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import BASE_URL from '@/app/config/api';
 
-interface User{
-  nickname: string,
-  email: string,
-  numberOfGroups:string,
-  dateJoined: string
-
+interface User {
+  nickname: string;
+  email: string;
+  numberOfGroups: string;
+  dateJoined: string;
 }
+
 const Profile = () => {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -20,8 +19,7 @@ const Profile = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const userIdRef = useRef<string | null>(null);
-  
-  const [userData, setUserData] = useState<User | null>(null)
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
     const storedId = localStorage.getItem('id');
@@ -95,48 +93,40 @@ const Profile = () => {
     router.push('/components/Settings/HomePage');
   };
 
-  //fectching the user data from the backend
-  const profileData = async()=>{
-
+  const profileData = async () => {
     const response = await fetch(`${BASE_URL}/api/communities/getProfileData/${userIdRef.current}`);
 
-    if(response.ok){
-      const data = await response.json()
-      setUserData(data)
-
-      console.log("Nickkkk",userData);
-
+    if (response.ok) {
+      const data = await response.json();
+      setUserData(data);
+    } else {
+      setError('Failed to fetch data');
     }
-    else{
-      setError("Failed to fect Data")
-    }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     profileData();
-  })
-
-  console.log(userData)
+  }, []);
 
   return (
-    <div className="text-black p-4 bg-white min-h-screen">
-      <nav className="flex justify-center items-center mb-6">
-        <h1 className="text-2xl font-bold">Profile</h1>
+    <div className="text-black p-6 bg-gray-50 min-h-screen">
+      <nav className="flex justify-center items-center mb-8">
+        <h1 className="text-3xl font-semibold text-gray-800">Profile</h1>
       </nav>
 
-      <div className="flex flex-col items-center gap-4 text-center">
-        <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-6 text-center">
+        <div className="flex flex-col items-center gap-4">
           {loading ? (
-            <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full shadow-lg">
+            <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full shadow-lg animate-pulse">
               <span className="text-gray-500 text-sm">Loading...</span>
             </div>
           ) : profileImage ? (
             <Image
               src={profileImage}
               alt="Profile Image"
-              height={350}
-              width={350}
-              className="rounded-full w-32 h-32 object-cover shadow-lg"
+              height={120}
+              width={120}
+              className="rounded-full object-cover shadow-md border-4 border-white"
             />
           ) : (
             <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full shadow-lg">
@@ -145,7 +135,7 @@ const Profile = () => {
           )}
           <label
             htmlFor="image-upload"
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600 transition-all"
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-all"
           >
             {selectedImage ? 'Change Image' : 'Upload Image'}
           </label>
@@ -157,35 +147,33 @@ const Profile = () => {
             className="hidden"
           />
         </div>
-        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+        {error && <div className="text-red-600 text-sm font-medium">{error}</div>}
       </div>
 
-      <div className='flex justify-center items-center'>
-        <h2>Nickname : </h2>
-        <h2><span>{userData?.nickname}</span></h2>
+      <div className="mt-8 grid gap-4 text-left max-w-md mx-auto">
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-700">Nickname:</span>
+          <span className="text-gray-900">{userData?.nickname || 'N/A'}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-700">Email:</span>
+          <span className="text-gray-900">{userData?.email || 'N/A'}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-700">Groups Joined:</span>
+          <span className="text-gray-900">{userData?.numberOfGroups || 'N/A'}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-700">Join Date:</span>
+          <span className="text-gray-900">{userData?.dateJoined || 'N/A'}</span>
+        </div>
       </div>
 
-      <div className='flex justify-center items-center'>
-        <h2>Email : </h2>
-        <h2><span>{userData?.email}</span></h2>
-      </div>
-
-      <div className='flex justify-center items-center'>
-        <h2>Groups Joined : </h2>
-        <h2><span>{userData?.numberOfGroups}</span></h2>
-      </div>
-
-      <div className='flex justify-center items-center'>
-        <h2>Join Date : </h2>
-        <h2><span>{userData?.numberOfGroups}</span></h2>
-      </div>
-
-
-      <nav className="mt-8 flex justify-center">
+      <nav className="mt-12 flex justify-center">
         <button
           aria-label="Go back to settings homepage"
           onClick={handleNavigateBack}
-          className="flex items-center gap-2 px-5 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300"
+          className="flex items-center gap-2 px-5 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-all duration-300 shadow-md"
         >
           <FaArrowLeft className="w-5 h-5" />
           Back
