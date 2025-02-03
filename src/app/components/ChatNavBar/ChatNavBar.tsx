@@ -47,6 +47,8 @@ function ChatNavBar({
     router.push(`/components/GroupsContainer/Container`);
   };
 
+  console.log(description)
+
   const checkUserMembership = useCallback(async (groupId: number): Promise<ApiResponse> => {
     const email = localStorage.getItem('email');
 
