@@ -6,6 +6,17 @@ import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
 import BASE_URL from '@/app/config/api';
 
+interface ChatData {
+  isMember: boolean;
+  usersCount: number;
+}
+
+interface ApiResponse {
+  status: number;
+  message: string;
+  data?: ChatData;
+}
+
 function ChatNavBar({
   image,
   alt,
@@ -21,111 +32,108 @@ function ChatNavBar({
   groupName: string;
   description: string;
   onJoin?: (groupId: number) => void;
-  onExit? :(groupId :number) =>void;
+  onExit?: (groupId: number) => void;
 }) {
-  const [isJoined, setIsJoined] = useState(false);
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
   const [error, setError] = useState<string | null>(null);
-  const [isModalVisible, setIsModalVisble] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userData, setUserData] = useState<ChatData>({
+    isMember: false,
+    usersCount: 0
+  });
 
   const handleNavigation = () => {
-    console.log(description, groupId,loading,error);
     router.push(`/components/GroupsContainer/Container`);
   };
 
-  //checking if user is part of the group
-  interface ApiResponse {
-    status: number;
-    message: string;
-  }
-
-  // Function to check user membership
-  async function checkUserMembership(groupId: number): Promise<ApiResponse> {
-    const email = localStorage.getItem("email");
+  const checkUserMembership = useCallback(async (groupId: number): Promise<ApiResponse> => {
+    const email = localStorage.getItem('email');
 
     if (!email) {
-      return {
-        status: 400,
-        message: "Email not found in local storage",
-        
-      };
+      throw new Error('Email not found in local storage');
     }
-    console.log('check for user membership')
 
-    const endpoint = `${BASE_URL}/api/communities/isMember/${encodeURIComponent(email)}/${groupId}`;
+    const endpoint = `${BASE_URL}/api/communities/isMember/${email}/${groupId}`;
 
     try {
       const response = await fetch(endpoint, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
-      const message = await response.text(); // Assuming the backend sends plain text as the message body.
+      const data = await response.json();
+      
+      if (response.ok) {
+        return {
+          status: response.status,
+          message: "Success",
+          data: {
+            isMember: data.isMember,
+            usersCount: data.usersCount
+          }
+        };
+      }
 
       return {
         status: response.status,
-        message: message,
+        message: data.message || "An error occurred",
       };
     } catch (error) {
-      console.error("Error checking user membership:", error);
-      return {
-        status: 500,
-        message: "An error occurred while connecting to the server.",
-      };
-    }
-  }
-
-  // Memoize the updateMembershipStatus function to avoid unnecessary re-renders
-  const updateMembershipStatus = useCallback(async (groupId: number) => {
-    setLoading(true);
-    setError(null); // Reset previous errors
-
-    try {
-      const response = await checkUserMembership(groupId);
-
-      if (response.status === 200) {
-        setIsJoined(true); // User is part of the group
-      } else if (response.status === 403) {
-        setIsJoined(false); // User is not part of the group
-      } else {
-        setError(response.message); // Handle unexpected responses
-      }
-    } catch (error) {
-      console.error("Error updating membership status:", error);
-      setError("Failed to update membership status.");
-    } finally {
-      setLoading(false); // Stop loading spinner
+      console.error('Error checking user membership:', error);
+      throw new Error('Failed to check membership status');
     }
   }, []);
 
-  // Trigger membership status update on groupId change
-  useEffect(() => {
-    updateMembershipStatus(groupId);
-  }, [groupId, updateMembershipStatus]);
+  const updateMembershipStatus = useCallback(async () => {
+    try {
+      const response = await checkUserMembership(groupId);
+      
+      if (response.status === 200 && response.data) {
+        setUserData(response.data);
+      } else {
+        setError(response.message);
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, [groupId, checkUserMembership]);
 
-  const handleJoin = () => {
-    setIsJoined(true);
-    onJoin?.(groupId);
+  useEffect(() => {
+    updateMembershipStatus();
+  }, [updateMembershipStatus]);
+
+  const handleJoin = async () => {
+    if (onJoin) {
+      onJoin(groupId);
+      // Update the local state after successful join
+      setUserData(prev => ({ ...prev, isMember: true }));
+    }
   };
 
-  //code to exit the group
-  function changeModal(){
-    console.log("Modal changed")
-    setIsModalVisble(true)
-  }
- 
-  function handleCloseModal(): void {
-    setIsModalVisble(false)
+  const handleConfirmExit = () => {
+    if (onExit) {
+      onExit(groupId);
+      // Update the local state after successful exit
+      setUserData(prev => ({ ...prev, isMember: false }));
+    }
+    setIsModalVisible(false);
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-16 bg-gray-800 text-white">
+      Loading...
+    </div>;
   }
 
-  function handleConfirmExit(): void {
-    console.log("User Exited the group")
-    onExit?.(groupId,)
-    setIsModalVisble(false)
-    
+  if (error) {
+    return <div className="flex items-center justify-center h-16 bg-gray-800 text-white">
+      Error: {error}
+    </div>;
   }
 
   return (
@@ -151,13 +159,13 @@ function ChatNavBar({
           </div>
           <div className="flex flex-col">
             <span className="font-semibold text-sm sm:text-base">{groupName}</span>
-            <span className="text-xs text-gray-300">online</span>
+            <span className="text-xs text-gray-300">{userData.isMember} members</span>
           </div>
         </div>
       </div>
 
       <div className="flex items-center space-x-2">
-        {!isJoined && (
+        {!userData.isMember && (
           <button
             onClick={handleJoin}
             className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-xs sm:text-sm"
@@ -168,6 +176,7 @@ function ChatNavBar({
             <span>Join</span>
           </button>
         )}
+        
         <button
           className="p-2 hover:bg-gray-700 rounded-full"
           type="button"
@@ -180,36 +189,33 @@ function ChatNavBar({
           className="p-2 hover:bg-gray-700 rounded-full"
           type="button"
           aria-label="More options"
-          onClick={changeModal}
+          onClick={() => setIsModalVisible(true)}
         >
           <MoreVertical size={24} />
         </button>
 
-         {/* Modal */}
-      {isModalVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg w-1/3 p-6 text-center">
-            <h2 className="text-xl font-semibold mb-4">Are you sure you want to exit?</h2>
-            <p className="text-gray-600 mb-6">Any unsaved changes will be lost.</p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={handleConfirmExit}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={handleCloseModal}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all"
-              >
-                Cancel
-              </button>
+        {isModalVisible && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-full sm:w-1/3 p-6 text-center">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900">Are you sure you want to exit?</h2>
+              <p className="text-gray-600 mb-6">Any unsaved changes will be lost.</p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={handleConfirmExit}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setIsModalVisible(false)}
+                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-        {/** */}
+        )}
       </div>
     </div>
   );

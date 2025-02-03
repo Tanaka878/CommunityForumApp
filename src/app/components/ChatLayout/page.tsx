@@ -117,9 +117,14 @@ const ChatLayoutContent = () => {
   async function handleExit(groupId: number): Promise<void> {
     
 
-    const response = await fetch(`${BASE_URL}/api/communities/exitGroup/${groupId}/${userId}`)
-    console.log(response)
-    console.log(" Exiing group with this id",groupId)
+    const response = await fetch(`${BASE_URL}/api/communities/exitGroup/${groupId}/${userId}`);
+    //console.log(response)
+    if(response.ok){
+      console.log(" Exiing group with this id",groupId)
+    }
+    else{
+      console.log('failed to exit group')
+    }
   }
 
   return (
