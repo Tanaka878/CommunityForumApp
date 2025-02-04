@@ -161,7 +161,7 @@ function ChatNavBar({
           </div>
           <div className="flex flex-col">
             <span className="font-semibold text-sm sm:text-base">{groupName}</span>
-            <span className="text-xs text-gray-300">{userData.isMember} members</span>
+            <span className="text-xs text-gray-300">{userData.usersCount} members</span>
           </div>
         </div>
       </div>
