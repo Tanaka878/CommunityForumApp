@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Loader, MessageSquare, ThumbsUp } from "lucide-react";
 import BASE_URL from "@/app/config/api";
 
@@ -12,12 +12,11 @@ interface Message {
   parentId?: string;
 }
 
-
 interface ChatAreaProps {
   userId: string;
   communityId: string;
   nickname: string;
-  username :string;
+  username: string;
 }
 
 
@@ -26,6 +25,13 @@ interface MessageItemProps {
   onLike: (messageId: string) => Promise<void>;
   onReply: (message: Message) => void;
   depth?: number;
+}
+
+interface UserValidationState {
+  isAuthenticated: boolean;
+  isCommunityMember: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({ 
@@ -110,47 +116,71 @@ const MessageItem: React.FC<MessageItemProps> = ({
   );
 };
 
-const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
+const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(userId)
- 
+  console.log(username)
+  
+  const [userValidation, setUserValidation] = useState<UserValidationState>({
+    isAuthenticated: false,
+    isCommunityMember: false,
+    isLoading: true,
+    error: null,
+    
+  });
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  const isMemberOf = async () => {
-    const email = localStorage.getItem('email');
-  
-    try {
-      const response = await fetch(`${BASE_URL}/api/communities/isMember/${email}/${communityId}`);
-  
-      if (!response.ok) {
-        console.log("User not part of the group")
-      }
-  
-      const text = await response.text(); // Parse response as plain text
-      console.log('Raw response text:', text);
-  
-      const isMember = text.trim().toLowerCase() === 'true';
-      console.log('Is member:', isMember);
-    } catch (error) {
-      console.error('Error fetching membership status:', error);
+  const validateUserAccess = useCallback(async () => {
+    if (!userId || !communityId) {
+      setUserValidation(prev => ({
+        ...prev,
+        isAuthenticated: false,
+        error: "Missing user or community information"
+      }));
+      return;
     }
-  };
-  
-  
 
-  useEffect(()=>{
-    isMemberOf()
+    try {
+      const email = localStorage.getItem('email');
+      if (!email) {
+        setUserValidation(prev => ({
+          ...prev,
+          isAuthenticated: false,
+          isLoading: false,
+          error: "User not authenticated"
+        }));
+        return;
+      }
 
-  })
-  const fetchMessages = async () => {
+      const response = await fetch(`${BASE_URL}/api/communities/isMember/${email}/${communityId}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to verify community membership");
+      }
+
+      const data = await response.json();
+      
+      setUserValidation({
+        isAuthenticated: true,
+        isCommunityMember: data.isMember,
+        isLoading: false,
+        error: null
+      });
+    } catch (error) {
+      console.log(error)
+
+      setUserValidation(prev => ({
+        ...prev,
+        isLoading: false,
+        error: "Failed to verify user access"
+      }));
+    }
+  }, [userId, communityId]);
+
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/message?communityId=${communityId}`);
@@ -159,11 +189,52 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
       setMessages(data);
     } catch (error) {
       setError("Failed to load messages. Please try again later.");
-      console.error("Error fetching messages:", error);
+      console.log(error)
     } finally {
       setLoading(false);
     }
-  };
+  }, [communityId]);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  useEffect(() => {
+    validateUserAccess();
+  }, [validateUserAccess]);
+
+  const updateMessageTreeWithReply = useCallback((messages: Message[], parentId: string, newReply: Message): Message[] => {
+    return messages.map(message => {
+      if (message.id === parentId) {
+        return {
+          ...message,
+          replies: [...(message.replies || []), newReply]
+        };
+      }
+      if (message.replies?.length) {
+        return {
+          ...message,
+          replies: updateMessageTreeWithReply(message.replies, parentId, newReply)
+        };
+      }
+      return message;
+    });
+  }, []);
+
+  const updateMessageTreeWithLike = useCallback((messages: Message[], messageId: string, newLikeCount: number): Message[] => {
+    return messages.map(message => {
+      if (message.id === messageId) {
+        return { ...message, likes: newLikeCount };
+      }
+      if (message.replies?.length) {
+        return {
+          ...message,
+          replies: updateMessageTreeWithLike(message.replies, messageId, newLikeCount)
+        };
+      }
+      return message;
+    });
+  }, []);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -190,7 +261,6 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
       const newMsg = await response.json();
 
       if (replyingTo) {
-        // Update the messages tree with the new reply
         setMessages(prevMessages => 
           updateMessageTreeWithReply(prevMessages, replyingTo.id, newMsg)
         );
@@ -201,29 +271,12 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
       setNewMessage("");
       setReplyingTo(null);
     } catch (error) {
+      console.log(error)
+
       setError("Failed to send message. Please try again.");
-      console.error("Error sending message:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const updateMessageTreeWithReply = (messages: Message[], parentId: string, newReply: Message): Message[] => {
-    return messages.map(message => {
-      if (message.id === parentId) {
-        return {
-          ...message,
-          replies: [...(message.replies || []), newReply]
-        };
-      }
-      if (message.replies?.length) {
-        return {
-          ...message,
-          replies: updateMessageTreeWithReply(message.replies, parentId, newReply)
-        };
-      }
-      return message;
-    });
   };
 
   const handleLike = async (messageId: string) => {
@@ -241,23 +294,10 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
         updateMessageTreeWithLike(prev, messageId, updatedMessage.likes)
       );
     } catch (error) {
-      console.error("Error liking message:", error);
-    }
-  };
+      console.log(error)
 
-  const updateMessageTreeWithLike = (messages: Message[], messageId: string, newLikeCount: number): Message[] => {
-    return messages.map(message => {
-      if (message.id === messageId) {
-        return { ...message, likes: newLikeCount };
-      }
-      if (message.replies?.length) {
-        return {
-          ...message,
-          replies: updateMessageTreeWithLike(message.replies, messageId, newLikeCount)
-        };
-      }
-      return message;
-    });
+      setError("Failed to like message. Please try again.");
+    }
   };
 
   return (
@@ -305,28 +345,46 @@ const Post: React.FC<ChatAreaProps> = ({userId,communityId, nickname}) => {
           </div>
         )}
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            className="flex-1 p-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-            placeholder="Type a message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            disabled={loading}
-            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-          />
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
-            onClick={handleSendMessage}
-            disabled={loading || !newMessage.trim()}
-          >
-            {loading ? (
-              <Loader className="animate-spin w-5 h-5" />
-            ) : (
-              'Send'
-            )}
-          </button>
-        </div>
+        {userValidation.isLoading ? (
+          <div className="flex justify-center p-4">
+            <Loader className="animate-spin text-gray-400" />
+          </div>
+        ) : userValidation.isAuthenticated && userValidation.isCommunityMember ? (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="flex-1 p-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+              placeholder="Type a message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              disabled={loading}
+              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+            />
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
+              onClick={handleSendMessage}
+              disabled={loading || !newMessage.trim()}
+            >
+              {loading ? (
+                <Loader className="animate-spin w-5 h-5" />
+              ) : (
+                'Send'
+              )}
+            </button>
+          </div>
+        ) : userValidation.error ? (
+          <div className="text-red-400 text-center p-2">
+            {userValidation.error}
+          </div>
+        ) : !userValidation.isCommunityMember ? (
+          <div className="text-gray-400 text-center p-2">
+            You must be a member of this community to participate in discussions.
+          </div>
+        ) : (
+          <div className="text-gray-400 text-center p-2">
+            Please sign in to participate in discussions.
+          </div>
+        )}
       </div>
     </div>
   );
