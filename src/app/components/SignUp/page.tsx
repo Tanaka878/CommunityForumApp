@@ -97,6 +97,7 @@ const SignUp = () => {
       localStorage.setItem('token', data.token);
       router.push('/components/Login');
     } catch (error) {
+      console.log(error)
       setError('Sign-up failed. Please try again.');
     } finally {
       setLoading(false);
