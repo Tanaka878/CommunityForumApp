@@ -3,20 +3,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { FaCog, FaComment, FaThumbtack } from "react-icons/fa";
+import { FaCog, FaComment, FaThumbtack,  FaSignOutAlt } from "react-icons/fa";
 import Explore from "../../Explore/Explore";
 import SearchBar from "../../SearchBar/SearchBar";
 import PinnedChat from "../../PinnedChats/PinnedChats";
 import BASE_URL from '@/app/config/api';
 import GroupList from "../../AllChats/page";
 
-
 interface User {
   email: string;
   localDate: string;
-  id:string;
-  nickname:string;
-
+  id: string;
+  nickname: string;
 }
 
 interface CommunityData {
@@ -32,8 +30,17 @@ const HomePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [communities, setCommunities] = useState<CommunityData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  /** Logic for picture selection */
+  // Handle scroll effect for navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   function pictureSelection(communityId: number): string {
     switch (communityId) {
       case 1:
@@ -48,12 +55,10 @@ const HomePage = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No token found, redirecting to login");
       router.push("/components/Login");
       return;
     }
 
-    // Validate token with backend
     axios
       .get<User>(`${BASE_URL}/api/v1/demo-controller/fetch`, {
         headers: {
@@ -62,15 +67,10 @@ const HomePage = () => {
       })
       .then((response) => {
         setUser(response.data);
-        console.log("User data:", response.data.email);
-        localStorage.setItem("id", response.data.id)
-        console.log('Nickname :' ,response.data.nickname)
-        localStorage.getItem("id")
-        localStorage.setItem("nickname",response.data.nickname)
-        console.log("The id : ",localStorage.getItem("id"))
+        localStorage.setItem("id", response.data.id);
+        localStorage.setItem("nickname", response.data.nickname);
       })
-      .catch((error) => {
-        console.error("Error:", error.response?.statusText || error.message);
+      .catch(() => {
         router.push("/components/Login");
       });
   }, [router]);
@@ -78,9 +78,7 @@ const HomePage = () => {
   const fetchCommunities = async () => {
     try {
       const response = await fetch(`${BASE_URL}/api/communities/getAll`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
       setCommunities(data);
     } catch (err) {
@@ -93,7 +91,7 @@ const HomePage = () => {
   }, []);
 
   const handleSettings = () => {
-    router.push(`/components/Settings/HomePage?id=${user?.id}`)
+    router.push(`/components/Settings/HomePage?id=${user?.id}`);
   };
 
   const handleSearch = (query: string) => {
@@ -102,90 +100,113 @@ const HomePage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    console.log("User logged out");
     window.location.href = "/";
   };
 
   if (!user) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-4 py-2 bg-white shadow">
-        <h2 className="text-lg font-bold font-serif">Messages</h2>
-        <button onClick={handleSettings}>
-          <FaCog className="text-gray-600 hover:text-gray-800 transition" />
-        </button>
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white/80 backdrop-blur-md shadow-md' : 'bg-white shadow'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h2 className="text-xl font-bold text-gray-800 font-serif">
+                Community Forum
+              </h2>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={handleSettings}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <FaCog className="text-gray-600 text-xl hover:text-gray-800" />
+              </button>
+              <div className="h-8 w-px bg-gray-200"></div>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+              >
+                <FaSignOutAlt />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </nav>
 
-      {/* Explore Section */}
-      <section className="flex p-4 space-x-3 bg-white shadow mt-2 rounded-lg overflow-x-auto">
-        {error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          communities.map((community) => (
-            <Explore
-              key={community.id}
-              groupId={community.id}
-              image={pictureSelection(community.id)}
-              groupName={community.communityName}
-              description={community.communityDescription}
-            />
-          ))
-        )}
-      </section>
+      {/* Main Content */}
+      <main className="flex-grow pt-20 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          {/* Search Bar */}
+          <div className="bg-white rounded-2xl shadow-sm p-4">
+            <SearchBar onSearch={handleSearch} />
+          </div>
 
-      {/* Search Bar */}
-      <section className="mt-4 px-4">
-        <SearchBar onSearch={handleSearch} />
-      </section>
+          {/* Explore Section */}
+          <section className="bg-white rounded-2xl shadow-sm p-6">
+            <h2 className="text-lg font-semibold mb-4">Explore Communities</h2>
+            <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+              {error ? (
+                <p className="text-red-500 px-4">{error}</p>
+              ) : (
+                communities.map((community) => (
+                  <Explore
+                    key={community.id}
+                    groupId={community.id}
+                    image={pictureSelection(community.id)}
+                    groupName={community.communityName}
+                    description={community.communityDescription}
+                  />
+                ))
+              )}
+            </div>
+          </section>
 
-      {/* Pinned Communities */}
-      <section className="mt-6 px-4">
-        <h1 className="flex items-center text-lg font-semibold">
-          <FaThumbtack className="mr-2" />
-          Popular Communities
-        </h1>
-        <div className="flex mt-2 space-x-3 overflow-x-auto bg-gray-200 p-2 rounded-lg">
-        {error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          communities.map((community) => (
-            <PinnedChat
-              key={community.id}
-              groupId={community.id}
-              image={pictureSelection(community.id)}
-              groupName={community.communityName}
-              description={community.communityDescription}
-            />
-          ))
-        )}
-          
+          {/* Pinned Communities */}
+          <section className="bg-white rounded-2xl shadow-sm p-6">
+            <h2 className="flex items-center text-lg font-semibold mb-4">
+              <FaThumbtack className="mr-2 text-blue-500" />
+              Popular Communities
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {error ? (
+                <p className="text-red-500">{error}</p>
+              ) : (
+                communities.map((community) => (
+                  <PinnedChat
+                    key={community.id}
+                    groupId={community.id}
+                    image={pictureSelection(community.id)}
+                    groupName={community.communityName}
+                    description={community.communityDescription}
+                  />
+                ))
+              )}
+            </div>
+          </section>
+
+          {/* My Communities */}
+          <section className="bg-white rounded-2xl shadow-sm p-6">
+            <h2 className="flex items-center text-lg font-semibold mb-4">
+              <FaComment className="mr-2 text-blue-500" />
+              My Communities
+            </h2>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <GroupList />
+            </div>
+          </section>
         </div>
-      </section>
-
-      {/* My Communities */}
-      <section className="mt-6 px-4 flex-grow">
-        <h1 className="flex items-center text-lg font-semibold">
-          <FaComment className="mr-2" />
-          My Communities
-        </h1>
-        <div className="flex items-center justify-center">
-          <GroupList/>
-        </div>
-      </section>
-
-      {/* Logout Button */}
-      <div className="sticky bottom-0 bg-white shadow p-4 flex justify-center">
-        <button
-          onClick={handleLogout}
-          className="w-1/3 px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-transform transform hover:scale-105"
-        >
-          Logout
-        </button>
-      </div>
+      </main>
     </div>
   );
 };
