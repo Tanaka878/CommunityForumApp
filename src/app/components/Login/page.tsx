@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import BASE_URL from '@/app/config/api';
 import Image from 'next/image';
+import Lottie from 'lottie-react'
+//import animate from '/Animantions/login_animation.json';
 
 
 const Login = () => {
@@ -18,6 +20,18 @@ const Login = () => {
   function Privacy(){
     console.log('privacy policy')
   }
+
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    const fetchAnimation = async () => {
+      const response = await fetch("/Images/login_animation.json");
+      const data = await response.json();
+      setAnimationData(data);
+    };
+    fetchAnimation();
+  }, []);
+
 
   useEffect(() => {
     const elements = document.querySelectorAll('.slide-in');
@@ -72,6 +86,10 @@ const Login = () => {
 
   return (
     <div className="ml-auto mr-auto w-full max-w-sm p-4">
+       <Lottie 
+        loop
+        className="absolute inset-0 w-full h-full object-cover" animationData={animationData}       />
+      
       <h1 className='flex justify-center text-center text-black font-extrabold sm:text-2xl animate-wave  te'>
         <span className='text-red-600'>C</span>
         <span>ommunity</span>

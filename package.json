@@ -19,7 +19,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "heroicons": "^2.2.0",
-    "lottie-react": "^2.4.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.468.0",
     "mongoose": "^8.9.4",
     "next": "^15.1.5",
