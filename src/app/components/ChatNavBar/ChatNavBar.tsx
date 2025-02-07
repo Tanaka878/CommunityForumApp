@@ -5,6 +5,7 @@ import { ArrowLeft, MoreVertical, Phone, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image, { StaticImageData } from 'next/image';
 import BASE_URL from '@/app/config/api';
+import Lottie from 'lottie-react';
 
 interface ChatData {
   isMember: boolean;
@@ -38,6 +39,7 @@ function ChatNavBar({
   const [loading, setLoading] = useState(true); // Start with loading true
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [animationData, setAnimationData] = useState(null);
   const [userData, setUserData] = useState<ChatData>({
     isMember: false,
     usersCount: 0
@@ -46,6 +48,20 @@ function ChatNavBar({
   const handleNavigation = () => {
     router.push(`/components/GroupsContainer/Container`);
   };
+
+  // Fetch animation data
+    useEffect(() => {
+      const fetchAnimation = async () => {
+        try {
+          const response = await fetch("/Images/LoadingNav.json");
+          const data = await response.json();
+          setAnimationData(data);
+        } catch (error) {
+          console.error('Failed to load animation:', error);
+        }
+      };
+      fetchAnimation();
+    }, []);
 
   console.log(description)
 
@@ -128,7 +144,15 @@ function ChatNavBar({
 
   if (loading) {
     return <div className="flex items-center justify-center h-16 bg-gray-800 text-white">
-      Loading...
+      <div className="fixed inset-0 z-0">
+        {animationData && (
+          <Lottie 
+            loop
+            className="w-full h-1"
+            animationData={animationData}
+          />
+        )}
+      </div>
     </div>;
   }
 
