@@ -44,11 +44,34 @@ const HomePage = () => {
   function pictureSelection(communityId: number): string {
     switch (communityId) {
       case 1:
-        return "/Images/music-lover.webp";
+        return "/Images/web dev.jpg";
+
       case 2:
+        return "/Images/gamers.jpeg";
+
+      case 3:
+        return "/Images/career.png";
+
+      case 4:
+        return "/Images/music-lover.webp";
+
+      case 5:
+        return "/Images/jsscript.png";
+
+      case 6:
+        return "/Images/javaImg0.png";
+
+      case 7 :
+        return "/Images/hiking.jpeg";
+
+      case 8 :
         return "/Images/food-lover.png";
-      default:
+
+      case 9 : 
         return "/Images/animal-lover.jpeg";
+
+      default:
+        return "/Images/noImage.jpeg"
     }
   }
 
