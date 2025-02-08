@@ -15,17 +15,17 @@ interface CommunityData {
 }
 
 interface GroupPreviewProps {
-  id: number; // Attach the unique group ID
-  imageUrl?: string; // Optional: Placeholder image URL
+  id: number; 
+  imageUrl?: string; 
   name: string;
   lastMessage: string;
   timestamp: string;
-  description: string; // Add description prop here
+  description: string; 
 }
 
 const GroupPreview = ({
   id,
-  imageUrl = '/Images/placeholder-image.jpeg', // Default image
+  imageUrl = '/Images/placeholder-image.jpeg', 
   name,
   lastMessage,
   timestamp,

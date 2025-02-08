@@ -101,6 +101,11 @@ const ChatLayoutContent = () => {
     }
   }
 
+  function isJoined(){
+    console.log("Function activated")
+
+  }
+
   // Function to join a group
   const handleJoinGroup = async (groupId: number) => {
     const email = localStorage.getItem("email");
@@ -165,7 +170,7 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea userId={userId!} communityId={id} username={nickname} nickname={nickname} />
+        <ChatArea userId={userId!} communityId={id} username={nickname} nickname={nickname} isJoined={isJoined} />
       </div>
     </div>
   );

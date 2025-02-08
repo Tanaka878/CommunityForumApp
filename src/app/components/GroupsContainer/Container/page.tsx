@@ -196,27 +196,29 @@ const HomePage = () => {
           </section>
 
           {/* Pinned Communities */}
-          <section className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="flex items-center text-lg font-semibold mb-4">
-              <FaThumbtack className="mr-2 text-blue-500" />
-              Popular Communities
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {error ? (
-                <p className="text-red-500">{error}</p>
-              ) : (
-                communities.map((community) => (
-                  <PinnedChat
-                    key={community.id}
-                    groupId={community.id}
-                    image={pictureSelection(community.id)}
-                    groupName={community.communityName}
-                    description={community.communityDescription}
-                  />
-                ))
-              )}
-            </div>
-          </section>
+              <section className="bg-white rounded-2xl shadow-sm p-6">
+      <h2 className="flex items-center text-lg font-semibold mb-4">
+        <FaThumbtack className="mr-2 text-blue-500" />
+        Popular Communities
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          communities
+            .filter(community => community.id <= 4) // Add this filter
+            .map((community) => (
+              <PinnedChat
+                key={community.id}
+                groupId={community.id}
+                image={pictureSelection(community.id)}
+                groupName={community.communityName}
+                description={community.communityDescription}
+              />
+            ))
+        )}
+      </div>
+</section>
 
           {/* My Communities */}
           <section className="bg-white rounded-2xl shadow-sm p-6">
