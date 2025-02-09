@@ -189,7 +189,6 @@ const HomePage = () => {
           image={pictureSelection(community.id)}
           groupName={community.communityName}
           description={community.communityDescription}
-          className="min-w-[200px]" // Add minimum width to cards
         />
       ))
     )}
