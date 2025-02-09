@@ -221,12 +221,12 @@ const HomePage = () => {
 </section>
 
           {/* My Communities */}
-          <section className="bg-white rounded-2xl shadow-sm p-6">
+          <section className="bg-white rounded-2xl shadow-sm p-3">
             <h2 className="flex items-center text-lg font-semibold mb-4">
               <FaComment className="mr-2 text-blue-500" />
               My Communities
             </h2>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 rounded-xl p-1">
               <GroupList />
             </div>
           </section>

@@ -19,7 +19,7 @@ interface GroupPreviewProps {
   imageUrl?: string; 
   name: string;
   lastMessage: string;
-  timestamp: string;
+  //timestamp: string;
   description: string; 
 }
 
@@ -28,7 +28,7 @@ const GroupPreview = ({
   imageUrl = '/Images/placeholder-image.jpeg', 
   name,
   lastMessage,
-  timestamp,
+ // timestamp,
   description, // Destructure description
 }: GroupPreviewProps) => {
   const router = useRouter();
@@ -65,7 +65,7 @@ const GroupPreview = ({
             <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
               {name}
             </h3>
-            <span className="text-sm text-gray-500 flex-shrink-0">{timestamp}</span>
+            <span className="text-sm text-gray-500 flex-shrink-0"></span>
           </div>
           <p className="text-sm text-gray-500 truncate group-hover:text-gray-600">
             {lastMessage}
@@ -172,8 +172,8 @@ const GroupList = () => {
                 key={community.id}
                 id={community.id}
                 name={community.communityName}
-                lastMessage="Sample message" // You can replace this with actual last message logic
-                timestamp={`${community.communitySize} members`}
+                lastMessage={community.communityDescription} // You can replace this with actual last message logic
+               // timestamp={`${community.communitySize} members`}
                 imageUrl={pictureSelection(community.id)}
                 description={community.communityDescription} // Pass the description here
               />
