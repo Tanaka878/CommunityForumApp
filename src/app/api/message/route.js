@@ -16,6 +16,7 @@ const formatMessage = (msg) => ({
 
 // GET: Fetch messages for a community
 export async function GET(request) {
+  console.log("Getting messages")
   const { searchParams } = new URL(request.url);
   const communityId = searchParams.get("communityId");
 

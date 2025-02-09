@@ -144,7 +144,7 @@ const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username
       }));
       return;
     }
-  
+
     try {
       const email = localStorage.getItem('email');
       if (!email) {
@@ -156,13 +156,13 @@ const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username
         }));
         return;
       }
-  
+
       const response = await fetch(`${BASE_URL}/api/communities/isMember/${email}/${communityId}`);
       
       if (!response.ok) {
         throw new Error("Failed to verify community membership");
       }
-  
+
       const data = await response.json();
       
       setUserValidation({
@@ -173,7 +173,7 @@ const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username
       });
     } catch (error) {
       console.log(error)
-  
+
       setUserValidation(prev => ({
         ...prev,
         isLoading: false,
@@ -181,18 +181,29 @@ const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username
       }));
     }
   }, [userId, communityId]);
-  
-  // Replace the existing useEffect for validateUserAccess with this:
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/message?communityId=${communityId}`);
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      setError("Failed to load messages. Please try again later.");
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
+  }, [communityId]);
+
   useEffect(() => {
-    // Initial check
+    fetchMessages();
+  }, [fetchMessages]);
+
+  useEffect(() => {
     validateUserAccess();
-  
-    // Set up interval for repeated checks
-    const intervalId = setInterval(validateUserAccess, 3000);
-  
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [validateUserAccess]); // Keep validateUserAccess in dependencies
+  }, [validateUserAccess]);
 
   const updateMessageTreeWithReply = useCallback((messages: Message[], parentId: string, newReply: Message): Message[] => {
     return messages.map(message => {
