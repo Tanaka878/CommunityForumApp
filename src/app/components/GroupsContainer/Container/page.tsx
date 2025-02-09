@@ -177,31 +177,31 @@ const HomePage = () => {
 
           {/* Explore Section */}
           <section className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold mb-4">Explore Communities</h2>
-            <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-              {error ? (
-                <p className="text-red-500 px-4">{error}</p>
-              ) : (
-                communities.map((community) => (
-                  <Explore
-                    key={community.id}
-                    groupId={community.id}
-                    image={pictureSelection(community.id)}
-                    groupName={community.communityName}
-                    description={community.communityDescription}
-                  />
-                ))
-              )}
-            </div>
-          </section>
-
+  <h2 className="text-lg font-semibold mb-4">Explore Communities</h2>
+  <div className="grid grid-cols-4 gap-4 overflow-x-auto pb-4 scrollbar-hide">
+    {error ? (
+      <p className="text-red-500 px-4">{error}</p>
+    ) : (
+      communities.map((community) => (
+        <Explore
+          key={community.id}
+          groupId={community.id}
+          image={pictureSelection(community.id)}
+          groupName={community.communityName}
+          description={community.communityDescription}
+          className="min-w-[200px]" // Add minimum width to cards
+        />
+      ))
+    )}
+  </div>
+</section>
           {/* Pinned Communities */}
               <section className="bg-white rounded-2xl shadow-sm p-6">
       <h2 className="flex items-center text-lg font-semibold mb-4">
         <FaThumbtack className="mr-2 text-blue-500" />
         Popular Communities
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className=" flex gap-1 overflow-x-auto flex-nowrap scrollbar-hide">
         {error ? (
           <p className="text-red-500">{error}</p>
         ) : (
@@ -214,6 +214,7 @@ const HomePage = () => {
                 image={pictureSelection(community.id)}
                 groupName={community.communityName}
                 description={community.communityDescription}
+                
               />
             ))
         )}
