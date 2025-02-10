@@ -84,7 +84,7 @@ const Login = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    router.push('/privacy-policy'); 
+    //router.push('/privacy-policy'); 
   };
 
   return (
