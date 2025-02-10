@@ -30,7 +30,7 @@ const PinnedChat: React.FC<ExploreProps> = ({ image, alt = "Image", groupId, gro
     /**Containong icons for pinned chats a little bit bigger */
   return (
     <div
-  className="p-1 bg-gray-400 rounded-lg h-36 w-1/2 flex items-center justify-center min-w-[30%] sm:w-[30%] md:w-[200px]"
+  className="p-1 bg-gray-400 rounded-lg h-36 w-1/3 flex items-center justify-center min-w-[20%] sm:w-[30%] md:w-[200px]"
   onClick={handleClick}
 >
   <button className="h-full w-full">

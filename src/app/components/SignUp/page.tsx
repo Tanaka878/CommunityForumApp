@@ -186,6 +186,7 @@ const SignUp = () => {
                 type="password"
                 id="password"
                 name="password"
+                minLength={4}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 slide-in opacity-0 translate-x-full"
@@ -206,6 +207,7 @@ const SignUp = () => {
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+                minLength={4}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 slide-in opacity-0 translate-x-full"

@@ -16,11 +16,7 @@ const SettingsContent: React.FC = () => {
   };
 
   const Privacy = () => {
-    if (id) {
-      router.push(`/components/Settings/Privacy?id=${id}`);
-    } else {
-      console.error('ID parameter is missing');
-    }
+    
   };
 
   const Profile = () => {

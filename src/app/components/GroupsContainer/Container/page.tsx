@@ -143,9 +143,12 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <h2 className="text-xl font-bold text-gray-800 font-serif">
-                Community Forum
-              </h2>
+            <h2 className="flex justify-center text-center text-black font-extrabold text-xl sm:text-2xl mb-6">
+            <span className="text-red-600">C</span>
+            <span>ommunity</span>
+            <span className="text-blue-500">-F</span>
+            <span>orum</span>
+          </h2>
             </div>
             <div className="flex items-center space-x-4">
               <button 
@@ -200,7 +203,7 @@ const HomePage = () => {
         <FaThumbtack className="mr-2 text-blue-500" />
         Popular Communities
       </h2>
-      <div className=" flex gap-1 overflow-x-auto flex-nowrap scrollbar-hide">
+      <div className=" flex gap-3 overflow-x-auto flex-nowrap scrollbar-hide">
         {error ? (
           <p className="text-red-500">{error}</p>
         ) : (

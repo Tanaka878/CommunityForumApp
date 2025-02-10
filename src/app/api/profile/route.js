@@ -31,7 +31,7 @@ export async function GET(request) {
     const userData = await UserData.findOne({ userId });
 
     if (!userData) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'upload an image' }, { status: 404 });
     }
 
     return NextResponse.json(userData);

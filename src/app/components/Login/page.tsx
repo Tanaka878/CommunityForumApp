@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -71,6 +71,7 @@ const Login = () => {
       router.push("/components/GroupsContainer/Container");
       
     } catch (error) {
+      console.log(error)
       setError('Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
@@ -83,7 +84,7 @@ const Login = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    router.push('/privacy-policy'); // Adjust route as needed
+    router.push('/privacy-policy'); 
   };
 
   return (
