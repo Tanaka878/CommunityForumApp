@@ -17,7 +17,7 @@ const AboutDev = () => {
   }
 
   function FaceBook() {
-    window.open("https://www.facebook.com/maxwell.musungare", "_blank");
+   // window.open("https://www.facebook.com/maxwell.musungare", "_blank");
   }
 
   function WhatsApp() {
