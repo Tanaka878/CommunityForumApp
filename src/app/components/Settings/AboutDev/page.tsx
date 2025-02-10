@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { MdEmail } from 'react-icons/md';
-import { FaLinkedin, FaFacebook, FaWhatsapp, FaPhone, FaGithub, FaArrowLeft } from 'react-icons/fa';
+import { FaLinkedin, FaWhatsapp, FaPhone, FaGithub, FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 const AboutDev = () => {
@@ -16,9 +16,7 @@ const AboutDev = () => {
     window.open("https://www.linkedin.com/in/tanaka-musungare-26668a295/", "_blank");
   }
 
-  function FaceBook() {
-   // window.open("https://www.facebook.com/maxwell.musungare", "_blank");
-  }
+ 
 
   function WhatsApp() {
     window.open("https://wa.me/message/6JACSMJBJ7DOA1");
@@ -37,14 +35,14 @@ const AboutDev = () => {
   }
 
   return (
-    <div className='bg-slate-600 h-screen'>
+    <div className='bg-slate-600 h-screen p-3 mt-4'>
       <div className='flex justify-center text-center'>
         <Image
           src={'/Images/header.png'}
           height={150}
           width={120}
           alt='Dev Image'
-          className='rounded-full animate-bounce'
+          className='rounded-full '
         />
       </div>
 
@@ -56,7 +54,7 @@ const AboutDev = () => {
         <h1 className='animate-bounce text-slate-200 text-3xl'>Let’s Connect</h1>
       </div>
 
-      <nav className='flex justify-center items-center space-x-4 py-4'>
+      <nav className='flex justify-center items-center space-x-4 p-4'>
         <button onClick={handleMail} className='transition-transform transform hover:scale-110'>
           <MdEmail className='p-2 h-14 w-14 text-white hover:text-blue-500 transition duration-300 ease-in-out' />
         </button>
@@ -65,9 +63,7 @@ const AboutDev = () => {
           <FaLinkedin className='p-2 h-14 w-14 text-white hover:text-blue-600 transition duration-300 ease-in-out' />
         </button>
 
-        <button onClick={FaceBook} className='transition-transform transform hover:scale-110'>
-          <FaFacebook className='p-2 h-14 w-14 text-white hover:text-blue-700 transition duration-300 ease-in-out' />
-        </button>
+        
 
         <button onClick={WhatsApp} className='transition-transform transform hover:scale-110'>
           <FaWhatsapp className='p-2 h-14 w-14 text-white hover:text-green-500 transition duration-300 ease-in-out' />
