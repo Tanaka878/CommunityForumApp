@@ -224,7 +224,7 @@ function ChatNavBar({
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg w-full sm:w-1/3 p-6 text-center">
               <h2 className="text-xl font-semibold mb-4 text-gray-900">Are you sure you want to exit?</h2>
-              <p className="text-gray-600 mb-6">Any unsaved changes will be lost.</p>
+              <p className="text-gray-600 mb-6">You will not be able to send messages</p>
               <div className="flex justify-center gap-4">
                 <button
                   onClick={handleConfirmExit}
