@@ -17,8 +17,10 @@ interface ChatAreaProps {
   communityId: string;
   nickname: string;
   username: string;
-  isJoined?: (value: boolean) => void;
-}
+  isJoined: () => void;
+  parentMessage?: string;
+  onJoin: (callback: () => void) => void;}
+  
 
 
 interface MessageItemProps {
@@ -118,14 +120,38 @@ const MessageItem: React.FC<MessageItemProps> = ({
 };
 
 
-const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username }) => {
+const Post: React.FC<ChatAreaProps> = ({ userId, communityId, nickname, username ,onJoin, isJoined,parentMessage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (parentMessage) {
+    }
+  }, [parentMessage]);
+
   console.log(username)
+  const handleParentCall = useCallback(() => {
+
+    setUserValidation({
+      isAuthenticated: true,
+      isCommunityMember: true,
+      isLoading: false,
+      error: null
+    });
+
+    isJoined(); // Call back to parent to acknowledge
+  }, [isJoined]);
+
+  // Register the callback when component mounts
+  useEffect(() => {
+    onJoin(handleParentCall);
+  }, [onJoin, handleParentCall]);
+
+  
+
   
   const [userValidation, setUserValidation] = useState<UserValidationState>({
     isAuthenticated: false,

@@ -16,7 +16,10 @@ const ChatLayoutContent = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [joinCallback, setJoinCallback] = useState<(() => void) | null>(null);
+  const [messageToChild, setMessageToChild] = useState<string>("");
 
+    
   // Effect to load userId from localStorage
   useEffect(() => {
     const storedUserId = localStorage.getItem("id");
@@ -103,8 +106,11 @@ const ChatLayoutContent = () => {
 
   function isJoined(){
     console.log("Function activated")
-
   }
+
+  const handleJoinCallback = (callback: () => void) => {
+    setJoinCallback(callback);
+  };
 
   // Function to join a group
   const handleJoinGroup = async (groupId: number) => {
@@ -125,8 +131,14 @@ const ChatLayoutContent = () => {
       });
 
       if (response.ok) {
+       
         const data = await response.json();
         console.log(`Successfully joined group with ID: ${groupId}`, data);
+        setMessageToChild("join_notification_" + Date.now());
+        if (joinCallback) {
+          joinCallback(); // This will trigger handleParentCall in child
+        }
+
       } else if (response.status === 404) {
         console.error("User not found. Unable to join group.");
       } else {
@@ -170,7 +182,8 @@ const ChatLayoutContent = () => {
 
       {/* Chat Area */}
       <div className="">
-        <ChatArea userId={userId!} communityId={id} username={nickname} nickname={nickname} isJoined={isJoined} />
+        <ChatArea userId={userId!} communityId={id} username={nickname} nickname={nickname} isJoined={isJoined}
+      onJoin={handleJoinCallback}  parentMessage={messageToChild}/>
       </div>
     </div>
   );
