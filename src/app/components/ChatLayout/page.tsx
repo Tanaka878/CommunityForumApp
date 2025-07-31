@@ -107,6 +107,7 @@ const ChatLayoutContent = () => {
   function isJoined(){
     console.log("Function activated")
   }
+  
 
   const handleJoinCallback = (callback: () => void) => {
     setJoinCallback(callback);
