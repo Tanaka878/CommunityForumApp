@@ -1,3 +1,3 @@
-const BASE_URL = "https://communityforumbackend-production.up.railway.app";
+const BASE_URL = "https://communityforum.thetalisman.co.zw";
 
 export default BASE_URL;
